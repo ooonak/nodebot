@@ -34,4 +34,7 @@
 # Build artifacts
 /cmake-build-*/
 /build*
+CMakeLists.txt.user
+
+TOKEN
 
