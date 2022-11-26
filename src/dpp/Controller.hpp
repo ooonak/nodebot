@@ -15,6 +15,9 @@ class Controller {
 private:
   const nb::Config & mConfig;
   std::shared_ptr<spdlog::logger> mLogger;
+
+  dpp::guild mGuild;
+  dpp::channel mChannel;
 };
 
 } // namespace nb
