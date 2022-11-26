@@ -1,23 +1,27 @@
 #pragma once
 
-#include "dpp/dpp.h"
+#include <memory>
+
 #include "Config.hpp"
+#include "dpp/dpp.h"
 #include "spdlog/spdlog.h"
 
-namespace nb {
+namespace nb
+{
 
-class Controller {
+class Controller
+{
  public:
   explicit Controller(const nb::Config &config);
 
   ~Controller();
 
-private:
-  const nb::Config & mConfig;
+ private:
+  const nb::Config &mConfig;
   std::shared_ptr<spdlog::logger> mLogger;
 
-  dpp::guild mGuild;
-  dpp::channel mChannel;
+  std::unique_ptr<dpp::guild> mGuild;
+  std::unique_ptr<dpp::channel> mChannel;
 };
 
-} // namespace nb
+}  // namespace nb
