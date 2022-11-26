@@ -5,17 +5,9 @@
 
 int main()
 {
-  std::cout << nb::NodeBot::version() << std::endl;
-
   try
   {
-    const char* token = std::getenv("BOT_TOKEN");
-    if (token == nullptr)
-    {
-      throw(std::invalid_argument("env variable BOT_TOKEN not set?"));
-    }
-
-    nb::NodeBot bot(token);
+    nb::NodeBot bot("/tmp/nodebot.conf");
   }
   catch (const std::exception& exc)
   {

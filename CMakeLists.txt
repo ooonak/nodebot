@@ -2,18 +2,16 @@ cmake_minimum_required(VERSION 3.22)
 
 project(NodeBot)
 
+option(BUILD_TESTS "Build test programs" OFF)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(FetchContent)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-FetchContent_Declare(
-  DPP
-  GIT_REPOSITORY https://github.com/brainboxdotcc/DPP.git
-  GIT_TAG v10.0.21
-)
-
-FetchContent_MakeAvailable(DPP)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
+include(dependencies)
+EnableUseFetchContent()
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -32,3 +30,8 @@ message(STATUS "CXX flags: ${CMAKE_CXX_FLAGS}")
 add_subdirectory(src)
 add_subdirectory(app)
 
+if(BUILD_TESTS)
+    include(CTest)
+    enable_testing()
+    add_subdirectory(test)
+endif(BUILD_TESTS)

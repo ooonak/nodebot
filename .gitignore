@@ -36,5 +36,5 @@
 /build*
 CMakeLists.txt.user
 
-TOKEN
-
+*.autosave
+*.conf

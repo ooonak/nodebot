@@ -11,14 +11,13 @@ class NodeBotImpl;
 class NodeBot
 {
  public:
-  explicit NodeBot(const std::string &token);
+  explicit NodeBot(const std::string &filename);
 
   ~NodeBot();
 
-  static std::string version();
-
  private:
   std::unique_ptr<NodeBotImpl> mImpl;
+
 };
 
 }  // namespace nb

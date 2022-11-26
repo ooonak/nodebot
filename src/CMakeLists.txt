@@ -10,9 +10,14 @@ file(WRITE ${PROJECT_BINARY_DIR}/nodebotconfig.hpp.in "
 #define NodeBot_VERSION_PATCH @NodeBot_VERSION_PATCH@
 ")
 
+find_package(Threads REQUIRED)
+
 add_library(${PROJECT_NAME}
     include/nb/NodeBot.hpp
+    Config.hpp
     NodeBot.cpp
+    dpp/Controller.cpp
+    dpp/Controller.hpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
@@ -23,10 +28,16 @@ target_include_directories(${PROJECT_NAME}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include>
+    ${spdlog_SOURCE_DIR}/include
+    ${toml_SOURCE_DIR}
 )
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
+    Threads::Threads
+    spdlog::spdlog
+    toml11::toml11
+    nlohmann_json::nlohmann_json
     dpp
 )
 

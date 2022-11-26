@@ -1,60 +1,55 @@
 #include "nb/NodeBot.hpp"
+#include "dpp/Controller.hpp"
+#include "Config.hpp"
 
-#include <dpp/dpp.h>
-
-#include <exception>
-#include <iostream>
+#include "spdlog/spdlog.h"
+#include "spdlog/async.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/sinks/rotating_file_sink.h"
 
 #include "nodebotconfig.hpp"
 
 class nb::NodeBotImpl
 {
- public:
-  explicit NodeBotImpl(const std::string &token)
+ private:
+  nb::Config mConfig;
+  std::unique_ptr<nb::Controller> mDppController;
+
+  void setupLogging()
   {
-    dpp::cluster bot(token);
-    std::cout << "Using BOT_TOKEN: " << std::getenv("BOT_TOKEN") << std::endl;
+    spdlog::init_thread_pool(8192, 2);
+    std::vector<spdlog::sink_ptr> sinks;
+    auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt >();
+    sinks.push_back(stdout_sink);
 
-    bot.on_log(dpp::utility::cout_logger());
+    auto dppLogger = std::make_shared<spdlog::async_logger>("DPP", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
+    dppLogger->set_level(spdlog::level::level_enum::debug);
+    spdlog::register_logger(dppLogger);
 
-    bot.on_slashcommand(
-        [](auto event)
-        {
-          std::cout << "Event slashcommand: "
-                    << event.command.get_command_name() << std::endl;
-          if (event.command.get_command_name() == "ping")
-          {
-            event.reply("Pong!");
-          }
-        });
+    auto l = spdlog::get("DPP");
+    if (l != nullptr)
+    {
+      l->info("About to initialize NodeBot {}.{}.{}", NodeBot_VERSION_MAJOR, NodeBot_VERSION_MINOR, NodeBot_VERSION_PATCH);
+    }
+  }
 
-    bot.on_ready(
-        [&bot](auto event)
-        {
-          if (dpp::run_once<struct register_bot_commands>())
-          {
-            std::cout << "Event on ready" << std::endl;
-            bot.global_command_create(
-                dpp::slashcommand("ping", "Ping pong!", bot.me.id));
-          }
-        });
+ public:
+  explicit NodeBotImpl(const std::string &filename)
+  {
+    const auto file = toml::parse(filename);
+    mConfig = toml::find<nb::Config>(file, "config");
 
-    bot.start(dpp::st_wait);
+    setupLogging();
+
+    mDppController = std::make_unique<nb::Controller>(mConfig);
   }
 
   ~NodeBotImpl() = default;
 };
 
-nb::NodeBot::NodeBot(const std::string &token)
-    : mImpl{std::make_unique<nb::NodeBotImpl>(token)}
+nb::NodeBot::NodeBot(const std::string &filename)
+    : mImpl{std::make_unique<nb::NodeBotImpl>(filename)}
 {
-}
-
-std::string nb::NodeBot::version()
-{
-  return "NodeBot " + std::to_string(NodeBot_VERSION_MAJOR) + "." +
-         std::to_string(NodeBot_VERSION_MINOR) + "." +
-         std::to_string(NodeBot_VERSION_PATCH);
 }
 
 nb::NodeBot::~NodeBot() = default;
