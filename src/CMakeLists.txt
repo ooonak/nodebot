@@ -16,8 +16,16 @@ add_library(${PROJECT_NAME}
     include/nb/NodeBot.hpp
     Config.hpp
     NodeBot.cpp
-    dpp/Controller.cpp
-    dpp/Controller.hpp
+    dpp/ChannelController.cpp
+    dpp/ChannelController.hpp
+    dpp/DppController.cpp
+    dpp/DppController.hpp
+    dpp/NodeController.cpp
+    dpp/NodeController.hpp
+    dpp/SlashCommandController.cpp
+    dpp/SlashCommandController.hpp
+    dpp/WebHookController.cpp
+    dpp/WebHookController.hpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)

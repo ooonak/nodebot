@@ -1,8 +1,8 @@
-#include "dpp/Controller.hpp"
+#include "dpp/DppDppController.hpp"
 
 #include <iostream>
 
-nb::Controller::Controller(const nb::Config &config)
+nb::DppController::DppController(const nb::Config &config)
     : mConfig{config}, mLogger{spdlog::get("DPP")}
 {
   mLogger->debug("{} {}", __func__, mConfig.token);
@@ -100,4 +100,4 @@ nb::Controller::Controller(const nb::Config &config)
   bot.start(dpp::st_wait);
 }
 
-nb::Controller::~Controller() { mLogger->debug(__func__); }
+nb::DppController::~DppController() { mLogger->debug(__func__); }

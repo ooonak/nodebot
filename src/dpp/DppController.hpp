@@ -9,12 +9,12 @@
 namespace nb
 {
 
-class Controller
+class DppController
 {
  public:
-  explicit Controller(const nb::Config &config);
+  explicit DppController(const nb::Config &config);
 
-  ~Controller();
+  ~DppController();
 
  private:
   const nb::Config &mConfig;
