@@ -1,5 +1,5 @@
 #include "nb/NodeBot.hpp"
-#include "dpp/Controller.hpp"
+#include "dpp/DppController.hpp"
 #include "Config.hpp"
 
 #include "spdlog/spdlog.h"
@@ -13,7 +13,7 @@ class nb::NodeBotImpl
 {
  private:
   nb::Config mConfig;
-  std::unique_ptr<nb::Controller> mDppController;
+  std::unique_ptr<nb::DppController> mDppController;
 
   void setupLogging()
   {
@@ -41,7 +41,7 @@ class nb::NodeBotImpl
 
     setupLogging();
 
-    mDppController = std::make_unique<nb::Controller>(mConfig);
+    mDppController = std::make_unique<nb::DppController>(mConfig);
   }
 
   ~NodeBotImpl() = default;

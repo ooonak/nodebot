@@ -1,6 +1,6 @@
 #include "ChannelController.hpp"
 
-nb::ChannelController::ChannelController(std::shared_ptr<dpp::cluster bot> bot)
+nb::ChannelController::ChannelController(std::shared_ptr<dpp::cluster> bot)
     : mBot{bot}
 {
 
