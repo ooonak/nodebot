@@ -26,7 +26,6 @@ class DppController
 
   std::shared_ptr<dpp::cluster> mBot;
   std::unique_ptr<dpp::guild> mGuild;
-  std::unique_ptr<dpp::channel> mChannel;
 
   std::unique_ptr<nb::ChannelController> mChannelController;
   std::unique_ptr<nb::NodeController> mNodeController;
@@ -34,7 +33,7 @@ class DppController
   std::unique_ptr<nb::WebHookController> mWebHookController;
 
   void onGetGuilds(const dpp::confirmation_callback_t &event);
-  // void onGetGuilds(const auto &event);
+
 };
 
 }  // namespace nb

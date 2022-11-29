@@ -40,6 +40,8 @@ nb::DppController::DppController(const nb::Config &config)
         }
       });
 
+  mChannelController = std::make_unique<nb::ChannelController>(mBot, "node", 2);
+
   mBot->on_ready(
       [this](const dpp::ready_t event)
       {
@@ -114,6 +116,12 @@ void nb::DppController::onGetGuilds(const dpp::confirmation_callback_t &event)
   }
   else
   {
-    mLogger->debug("current_user_get_guilds ");
+    auto guilds = std::get<dpp::guild_map>(event.value);
+    for (auto const &[key, value] : guilds)
+    {
+      mGuild = std::make_unique<dpp::guild>(value);
+      mLogger->info("I'm a Discord bot named '{}' ({}) connected to guild '{}' ({})", mBot->me.username, mBot->me.id, mGuild->name, mGuild->id);
+      mChannelController->start(mGuild->id);
+  }
   }
 }
