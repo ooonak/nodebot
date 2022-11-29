@@ -2,7 +2,11 @@
 
 #include <memory>
 
+#include "ChannelController.hpp"
 #include "Config.hpp"
+#include "NodeController.hpp"
+#include "SlashCommandController.hpp"
+#include "WebHookController.hpp"
 #include "dpp/dpp.h"
 #include "spdlog/spdlog.h"
 
@@ -20,8 +24,17 @@ class DppController
   const nb::Config &mConfig;
   std::shared_ptr<spdlog::logger> mLogger;
 
+  std::shared_ptr<dpp::cluster> mBot;
   std::unique_ptr<dpp::guild> mGuild;
   std::unique_ptr<dpp::channel> mChannel;
+
+  std::unique_ptr<nb::ChannelController> mChannelController;
+  std::unique_ptr<nb::NodeController> mNodeController;
+  std::unique_ptr<nb::SlashCommandController> mSlashCommandController;
+  std::unique_ptr<nb::WebHookController> mWebHookController;
+
+  void onGetGuilds(const dpp::confirmation_callback_t &event);
+  // void onGetGuilds(const auto &event);
 };
 
 }  // namespace nb

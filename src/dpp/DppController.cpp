@@ -1,16 +1,20 @@
 #include "dpp/DppController.hpp"
 
+#include <functional>
 #include <iostream>
+
+using namespace std::placeholders;
 
 nb::DppController::DppController(const nb::Config &config)
     : mConfig{config}, mLogger{spdlog::get("DPP")}
 {
   mLogger->debug("{} {}", __func__, mConfig.token);
 
-  dpp::cluster bot(mConfig.token);
+  mBot = std::make_shared<dpp::cluster>(mConfig.token);
 
-  bot.on_log(
-      [&bot, this](const dpp::log_t &event)
+  // Direct logs to spd
+  mBot->on_log(
+      [this](const dpp::log_t &event)
       {
         switch (event.severity)
         {
@@ -36,18 +40,14 @@ nb::DppController::DppController(const nb::Config &config)
         }
       });
 
-  bot.on_slashcommand(
-      [this](auto event)
+  mBot->on_ready(
+      [this](const dpp::ready_t event)
       {
-        mLogger->debug("Event slashcommand: {}",
-                       event.command.get_command_name());
-        if (event.command.get_command_name() == "ping")
-        {
-          event.reply("Pong!");
-        }
+        mBot->current_user_get_guilds(
+            std::bind(&nb::DppController::onGetGuilds, this, _1));
       });
 
-  bot.on_ready(
+  /*
       [&bot, this](const dpp::ready_t event)
       {
         bot.current_user_get_guilds(
@@ -89,15 +89,31 @@ nb::DppController::DppController(const nb::Config &config)
               }
             });
 
+
         if (dpp::run_once<struct register_bot_commands>())
         {
           // mLogger->debug("event.msg.channel_id {}", event.msg.channel_id);
           bot.global_command_create(
               dpp::slashcommand("ping", "Ping pong!", bot.me.id));
         }
-      });
 
-  bot.start(dpp::st_wait);
+      });
+      */
+
+  mBot->start(dpp::st_wait);
 }
 
 nb::DppController::~DppController() { mLogger->debug(__func__); }
+
+void nb::DppController::onGetGuilds(const dpp::confirmation_callback_t &event)
+{
+  if (event.is_error())
+  {
+    const auto err = event.get_error();
+    mLogger->error("{} {} {}", __func__, err.code, err.message);
+  }
+  else
+  {
+    mLogger->debug("current_user_get_guilds ");
+  }
+}
