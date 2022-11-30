@@ -45,6 +45,14 @@ void nb::ChannelController::onChannelsGet(const dpp::confirmation_callback_t &ev
 
     for (auto const &[key, value] : channels)
     {
+      /*
+      if (value.is_category())
+      {
+        // TODO: Get or create category channel first and use parent id for sub channels.
+        mLogger->info("{} {}", value.name, value.id);
+      }
+      */
+
       if (value.get_type() == dpp::CHANNEL_TEXT && value.name.starts_with(mPrefix))
       {
         bool channelExpired = channelOlderThan(value, mLifetimeHours);
@@ -78,7 +86,7 @@ void nb::ChannelController::onChannelsGet(const dpp::confirmation_callback_t &ev
       const auto now = std::chrono::system_clock::now();
       const auto itt = std::chrono::system_clock::to_time_t(now);
       std::ostringstream ss;
-      ss << mPrefix << std::put_time(gmtime(&itt), "%Y%m%d%H%M");
+      ss << mPrefix << "-" << std::put_time(gmtime(&itt), "%Y%m%d%H%M");
 
       newChannel.set_name(ss.str());
       newChannel.set_guild_id(mGuildId);
@@ -121,7 +129,7 @@ void nb::ChannelController::onChannelDelete(const dpp::confirmation_callback_t &
   }
   else
   {
-    mLogger->info("Deleted channel {}, id: {}.", std::get<dpp::channel>(event.value).name, std::get<dpp::channel>(event.value).id);
+    mLogger->info("Deleted channel.");
   }
 }
 
