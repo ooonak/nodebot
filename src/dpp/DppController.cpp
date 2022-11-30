@@ -10,6 +10,7 @@ nb::DppController::DppController(const nb::Config &config)
 {
   mLogger->info("{} loading... (Dpp {})", __func__, dpp::utility::version());
 
+  // TODO dpp::i_default_intents | dpp::i_message_content
   mBot = std::make_shared<dpp::cluster>(mConfig.token);
 
   // Direct logs to spd
@@ -70,7 +71,7 @@ void nb::DppController::onGetGuilds(const dpp::confirmation_callback_t &event)
       mGuild = std::make_unique<dpp::guild>(value);
       mLogger->info("I'm a Discord bot named '{}' ({}) connected to guild '{}' ({})", mBot->me.username, mBot->me.id, mGuild->name, mGuild->id);
       mChannelController->start(mGuild->id);
-      mBot->start_timer(std::bind(&nb::DppController::onTimerTick, this), 1);
+      mBot->start_timer(std::bind(&nb::DppController::onTimerTick, this), 10);
     }
   }
 }

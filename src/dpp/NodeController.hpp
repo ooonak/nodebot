@@ -19,11 +19,10 @@ class NodeController
  private:
   std::shared_ptr<dpp::cluster> mBot;
   std::shared_ptr<spdlog::logger> mLogger;
+  std::unordered_map<uint64_t, dpp::message> mNodes;
 
-  using MapValueT = std::pair<dpp::snowflake, std::string>;
-  std::unordered_map<uint64_t, MapValueT> mNodes;
-
-  void onMessageCreate(const dpp::confirmation_callback_t &event);
+  void onMessageCreate(const dpp::message_create_t &event);
+  void onMessageUpdate(const dpp::message_update_t &event);
 
 };
 
