@@ -15,7 +15,20 @@ nb::ChannelController::ChannelController(std::shared_ptr<dpp::cluster> bot, std:
 
 void nb::ChannelController::start(dpp::snowflake guildId)
 {
-  mBot->channels_get(guildId, std::bind(&ChannelController::onChannelsGet, this, _1));
+  mGuildId = guildId;
+  mBot->channels_get(mGuildId, std::bind(&ChannelController::onChannelsGet, this, _1));
+}
+
+std::optional<dpp::snowflake> nb::ChannelController::ready() const
+{
+  if (mReady && mActiveChannel != nullptr)
+  {
+    return mActiveChannel->id;
+  }
+  else
+  {
+    std::nullopt;
+  }
 }
 
 void nb::ChannelController::onChannelsGet(const dpp::confirmation_callback_t &event)
@@ -60,8 +73,55 @@ void nb::ChannelController::onChannelsGet(const dpp::confirmation_callback_t &ev
     }
     else
     {
-      //mLogger->info("Created new channel {}, id: {}, created: {}.", mActiveChannel->name, mActiveChannel->id, ISO8601UTC(mActiveChannel->id));
+      dpp::channel newChannel;
+      std::string name = mPrefix;
+      const auto now = std::chrono::system_clock::now();
+      const auto itt = std::chrono::system_clock::to_time_t(now);
+      std::ostringstream ss;
+      ss << mPrefix << std::put_time(gmtime(&itt), "%Y%m%d%H%M");
+
+      newChannel.set_name(ss.str());
+      newChannel.set_guild_id(mGuildId);
+      newChannel.set_type(dpp::channel_type::CHANNEL_TEXT);
+
+      mBot->channel_create(newChannel, std::bind(&ChannelController::onChannelCreate, this, _1));
     }
+
+    if (!mExpiredChannelsToDelete.empty())
+    {
+      for (const auto channel : mExpiredChannelsToDelete)
+      {
+        mLogger->debug("About to delete channel {}, id: {}", channel.name, channel.id);
+        mBot->channel_delete(channel.id, std::bind(&ChannelController::onChannelDelete, this, _1));
+      }
+    }
+  }
+}
+
+void nb::ChannelController::onChannelCreate(const dpp::confirmation_callback_t &event)
+{
+  if (event.is_error())
+  {
+    const auto err = event.get_error();
+    mLogger->error("{} {} {}", __func__, err.code, err.message);
+  }
+  else
+  {
+    mActiveChannel = std::make_unique<dpp::channel>(std::get<dpp::channel>(event.value));
+    mLogger->info("Created new channel {}, id: {}.", mActiveChannel->name, mActiveChannel->id);
+  }
+}
+
+void nb::ChannelController::onChannelDelete(const dpp::confirmation_callback_t &event)
+{
+  if (event.is_error())
+  {
+    const auto err = event.get_error();
+    mLogger->error("{} {} {}", __func__, err.code, err.message);
+  }
+  else
+  {
+    mLogger->info("Deleted channel {}, id: {}.", std::get<dpp::channel>(event.value).name, std::get<dpp::channel>(event.value).id);
   }
 }
 
