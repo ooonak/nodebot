@@ -26,6 +26,7 @@ class DppController
 
   std::shared_ptr<dpp::cluster> mBot;
   std::unique_ptr<dpp::guild> mGuild;
+  dpp::timer mTimer;
 
   std::unique_ptr<nb::ChannelController> mChannelController;
   std::unique_ptr<nb::NodeController> mNodeController;
@@ -34,6 +35,7 @@ class DppController
 
   void onGetGuilds(const dpp::confirmation_callback_t &event);
 
+  void onTimerTick();
 };
 
 }  // namespace nb

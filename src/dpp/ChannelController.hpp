@@ -3,7 +3,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <optional>
 
 #include "dpp/dpp.h"
 #include "spdlog/spdlog.h"
@@ -18,7 +17,7 @@ class ChannelController
 
   void start(dpp::snowflake guildId);
 
-  std::optional<dpp::snowflake> ready() const;
+  bool ready(dpp::snowflake &id) const;
 
  private:
   std::shared_ptr<dpp::cluster> mBot;
@@ -29,6 +28,7 @@ class ChannelController
 
   std::unique_ptr<dpp::channel> mActiveChannel;
   std::vector<dpp::channel> mExpiredChannelsToDelete;
+  size_t mChannelsDeleted{0};
 
   dpp::snowflake mGuildId{0};
 

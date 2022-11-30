@@ -19,15 +19,16 @@ void nb::ChannelController::start(dpp::snowflake guildId)
   mBot->channels_get(mGuildId, std::bind(&ChannelController::onChannelsGet, this, _1));
 }
 
-std::optional<dpp::snowflake> nb::ChannelController::ready() const
+bool nb::ChannelController::ready(dpp::snowflake &id) const
 {
-  if (mReady && mActiveChannel != nullptr)
+  if (mReady == true && mActiveChannel != nullptr)
   {
-    return mActiveChannel->id;
+    id = mActiveChannel->id;
+    return true;
   }
   else
   {
-    std::nullopt;
+    return false;
   }
 }
 
@@ -78,6 +79,11 @@ void nb::ChannelController::onChannelsGet(const dpp::confirmation_callback_t &ev
     {
       mActiveChannel = std::make_unique<dpp::channel>(channels.at(newestChannelId));
       mLogger->info("Setting active channel to {}, id: {}, created: {}.", mActiveChannel->name, mActiveChannel->id, ISO8601UTC(mActiveChannel->id));
+      if (mExpiredChannelsToDelete.size() == mChannelsDeleted)
+      {
+        mLogger->debug("Setting ChannelController ready.");
+        mReady = true;
+      }
     }
     else
     {
@@ -117,6 +123,11 @@ void nb::ChannelController::onChannelCreate(const dpp::confirmation_callback_t &
   {
     mActiveChannel = std::make_unique<dpp::channel>(std::get<dpp::channel>(event.value));
     mLogger->info("Created new channel {}, id: {}.", mActiveChannel->name, mActiveChannel->id);
+    if (mExpiredChannelsToDelete.size() == mChannelsDeleted)
+    {
+      mLogger->debug("Setting ChannelController ready.");
+      mReady = true;
+    }
   }
 }
 
@@ -130,6 +141,12 @@ void nb::ChannelController::onChannelDelete(const dpp::confirmation_callback_t &
   else
   {
     mLogger->info("Deleted channel.");
+    mChannelsDeleted++;
+    if (mExpiredChannelsToDelete.size() == mChannelsDeleted)
+    {
+      spdlog::debug("Setting ChannelController ready.");
+      mReady = true;
+    }
   }
 }
 
