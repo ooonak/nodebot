@@ -8,7 +8,7 @@ using namespace std::placeholders;
 nb::DppController::DppController(const nb::Config &config)
     : mConfig{config}, mLogger{spdlog::get("DPP")}
 {
-  mLogger->debug("{} {}", __func__, mConfig.token);
+  mLogger->info("{} loading... (Dpp {})", __func__, dpp::utility::version());
 
   mBot = std::make_shared<dpp::cluster>(mConfig.token);
 
@@ -40,7 +40,7 @@ nb::DppController::DppController(const nb::Config &config)
         }
       });
 
-  mChannelController = std::make_unique<nb::ChannelController>(mBot, "node", 2);
+  mChannelController = std::make_unique<nb::ChannelController>(mBot, mConfig.channelPrefix, mConfig.channelLifetimeInHours);
 
   mBot->on_ready(
       [this](const dpp::ready_t event)

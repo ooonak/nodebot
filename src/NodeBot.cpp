@@ -45,6 +45,20 @@ class nb::NodeBotImpl
   }
 
   ~NodeBotImpl() = default;
+
+  std::shared_ptr<nb::NodeHandle> getHandle(const std::string &jsonStr)
+  {
+    if (mDppController != nullptr)
+    {
+      auto logger = spdlog::get("DPP");
+      if (logger != nullptr)
+      {
+        logger->debug("{} {}", __PRETTY_FUNCTION__, jsonStr);
+      }
+    }
+
+    return nullptr;
+  }
 };
 
 nb::NodeBot::NodeBot(const std::string &filename)
@@ -53,3 +67,8 @@ nb::NodeBot::NodeBot(const std::string &filename)
 }
 
 nb::NodeBot::~NodeBot() = default;
+
+std::shared_ptr<nb::NodeHandle> nb::NodeBot::getHandle(const std::string &jsonStr)
+{
+  return mImpl->getHandle(jsonStr);
+}

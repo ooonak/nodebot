@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include "NodeHandle.hpp"
 
 namespace nb
 {
@@ -14,6 +15,8 @@ class NodeBot
   explicit NodeBot(const std::string &filename);
 
   ~NodeBot();
+
+  std::shared_ptr<NodeHandle> getHandle(const std::string &jsonStr);
 
  private:
   std::unique_ptr<NodeBotImpl> mImpl;

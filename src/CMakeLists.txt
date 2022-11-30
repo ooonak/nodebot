@@ -14,8 +14,10 @@ find_package(Threads REQUIRED)
 
 add_library(${PROJECT_NAME}
     include/nb/NodeBot.hpp
+    include/nb/NodeHandle.hpp
     Config.hpp
     NodeBot.cpp
+    NodeHandle.cpp
     dpp/ChannelController.cpp
     dpp/ChannelController.hpp
     dpp/DppController.cpp

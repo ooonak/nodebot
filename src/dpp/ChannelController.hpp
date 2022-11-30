@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "dpp/dpp.h"
 #include "spdlog/spdlog.h"
@@ -24,8 +25,16 @@ class ChannelController
   const int mLifetimeHours;
 
   std::unique_ptr<dpp::channel> mActiveChannel;
+  std::vector<dpp::channel> mExpiredChannelsToDelete;
 
   void onChannelsGet(const dpp::confirmation_callback_t &event);
+
+  // Helpers
+  static std::string ISO8601UTC(dpp::snowflake id);
+
+  bool channelOlderThan(const dpp::channel &channel, int channelLifetimeInHours);
+
+  static bool channelCreatedAfter(const dpp::channel &channel, const dpp::channel &compareAgainst);
 };
 
 }  // namespace nb
