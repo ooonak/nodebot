@@ -2,15 +2,14 @@
 
 #include <functional>
 #include <iostream>
+#include <thread>
 
 using namespace std::placeholders;
 
-nb::DppController::DppController(const nb::Config &config)
-    : mConfig{config}, mLogger{spdlog::get("DPP")}
+nb::DppController::DppController(const nb::Config &config,
+                                 std::shared_ptr<nb::NodeQueues> nodeQueues)
+    : mConfig{config}, mLogger{spdlog::get("DPP")}, mNodeQueues{nodeQueues}
 {
-  mLogger->info("{} loading... (Dpp {})", __func__, dpp::utility::version());
-
-  // TODO dpp::i_default_intents | dpp::i_message_content
   mBot = std::make_shared<dpp::cluster>(mConfig.token);
 
   // Direct logs to spd
@@ -41,7 +40,8 @@ nb::DppController::DppController(const nb::Config &config)
         }
       });
 
-  mChannelController = std::make_unique<nb::ChannelController>(mBot, mConfig.channelPrefix, mConfig.channelLifetimeInHours);
+  mChannelController = std::make_unique<nb::ChannelController>(
+      mBot, mConfig.channelPrefix, mConfig.channelLifetimeInHours);
   mNodeController = std::make_unique<nb::NodeController>(mBot);
 
   mBot->on_ready(
@@ -50,8 +50,6 @@ nb::DppController::DppController(const nb::Config &config)
         mBot->current_user_get_guilds(
             std::bind(&nb::DppController::onGetGuilds, this, _1));
       });
-
-  mBot->start(dpp::st_wait);
 }
 
 nb::DppController::~DppController() { mLogger->debug(__func__); }
@@ -69,15 +67,24 @@ void nb::DppController::onGetGuilds(const dpp::confirmation_callback_t &event)
     for (auto const &[key, value] : guilds)
     {
       mGuild = std::make_unique<dpp::guild>(value);
-      mLogger->info("I'm a Discord bot named '{}' ({}) connected to guild '{}' ({})", mBot->me.username, mBot->me.id, mGuild->name, mGuild->id);
+      mLogger->info(
+          "I'm a Discord bot named '{}' ({}) connected to guild '{}' ({})",
+          mBot->me.username, mBot->me.id, mGuild->name, mGuild->id);
       mChannelController->start(mGuild->id);
-      mBot->start_timer(std::bind(&nb::DppController::onTimerTick, this), 10);
+      mBot->start_timer(std::bind(&nb::DppController::onTimerTick, this), 3);
     }
   }
 }
 
 void nb::DppController::onTimerTick()
 {
+  if (mStop == true)
+  {
+    mLogger->info("DppController about to shutdown.");
+    mBot->shutdown();
+    return;
+  }
+
   if (mChannelController != nullptr)
   {
     dpp::snowflake channelId{0};
@@ -85,8 +92,23 @@ void nb::DppController::onTimerTick()
     {
       if (mNodeController != nullptr)
       {
-       mNodeController->update(123, "", channelId);
+        // mNodeController->update(123, "", channelId);
+        // TODO Ask NodeQueues for new nodes and set WebHook, register commands,
+        // and so on...
       }
     }
   }
 }
+
+void nb::DppController::start()
+{
+  if (mBot != nullptr)
+  {
+    mLogger->info("Starting DppController in thread {} (Dpp {})", __func__,
+                  std::hash<std::thread::id>{}(std::this_thread::get_id()),
+                  dpp::utility::version());
+    mBot->start(dpp::st_wait);
+  }
+}
+
+void nb::DppController::stop() { mStop = true; }

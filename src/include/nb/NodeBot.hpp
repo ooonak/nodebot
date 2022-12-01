@@ -2,7 +2,9 @@
 
 #include <memory>
 #include <string>
-#include "NodeHandle.hpp"
+#include <vector>
+
+#include "DataTypes.hpp"
 
 namespace nb
 {
@@ -16,11 +18,14 @@ class NodeBot
 
   ~NodeBot();
 
-  std::shared_ptr<NodeHandle> getHandle(const std::string &jsonStr);
+  void start();
+
+  void stop();
+
+  uint64_t getHandle(const NodeInfo &info);
 
  private:
   std::unique_ptr<NodeBotImpl> mImpl;
-
 };
 
 }  // namespace nb

@@ -1,10 +1,11 @@
 #include <string>
-#include <functional>
+#include <vector>
 
 namespace nb
 {
 
-class NodeHandle
+/*
+class NodeInfo
 {
  public:
   explicit NodeHandle(uint64_t id, const std::string &mJsonStr);
@@ -21,5 +22,6 @@ class NodeHandle
   uint64_t mId{0};
   std::string mJsonStr;
 };
+*/
 
 }  // namespace nb

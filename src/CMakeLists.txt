@@ -14,10 +14,9 @@ find_package(Threads REQUIRED)
 
 add_library(${PROJECT_NAME}
     include/nb/NodeBot.hpp
-    include/nb/NodeHandle.hpp
+    include/nb/DataTypes.hpp
     Config.hpp
     NodeBot.cpp
-    NodeHandle.cpp
     dpp/ChannelController.cpp
     dpp/ChannelController.hpp
     dpp/DppController.cpp
@@ -28,6 +27,8 @@ add_library(${PROJECT_NAME}
     dpp/SlashCommandController.hpp
     dpp/WebHookController.cpp
     dpp/WebHookController.hpp
+    dpp/NodeQueues.cpp
+    dpp/NodeQueues.hpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)

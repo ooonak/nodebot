@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,9 @@ namespace nb
 class ChannelController
 {
  public:
-  explicit ChannelController(std::shared_ptr<dpp::cluster> bot, std::string channelPrefix, int channelLifetimeInHours);
+  explicit ChannelController(std::shared_ptr<dpp::cluster> bot,
+                             std::string channelPrefix,
+                             int channelLifetimeInHours);
 
   void start(dpp::snowflake guildId);
 
@@ -41,9 +44,11 @@ class ChannelController
   // Helpers
   static std::string ISO8601UTC(dpp::snowflake id);
 
-  bool channelOlderThan(const dpp::channel &channel, int channelLifetimeInHours);
+  bool channelOlderThan(const dpp::channel &channel,
+                        int channelLifetimeInHours);
 
-  static bool channelCreatedAfter(const dpp::channel &channel, const dpp::channel &compareAgainst);
+  static bool channelCreatedAfter(const dpp::channel &channel,
+                                  const dpp::channel &compareAgainst);
 };
 
 }  // namespace nb

@@ -7,23 +7,26 @@ static std::string Needle{"ID: "};
 nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot)
     : mBot{bot}, mLogger{spdlog::get("DPP")}
 {
-  mBot->on_message_create(std::bind(&NodeController::onMessageCreate, this, _1));
-  mBot->on_message_update(std::bind(&NodeController::onMessageUpdate, this, _1));
+  mBot->on_message_create(
+      std::bind(&NodeController::onMessageCreate, this, _1));
+  mBot->on_message_update(
+      std::bind(&NodeController::onMessageUpdate, this, _1));
 }
 
-void nb::NodeController::update(uint64_t id, const std::string &jsonStr, dpp::snowflake channelId)
+void nb::NodeController::update(uint64_t id, const std::string &jsonStr,
+                                dpp::snowflake channelId)
 {
   if (mNodes.find(id) == mNodes.end())
   {
     mNodes[id] = dpp::message{0};
 
     // TODO Remove test...
-    dpp::embed embed = dpp::embed().
-                       set_color(dpp::colors::sti_blue).
-                       set_title("Some Node Name").
-                       set_description("Some description here").
-                       add_field("Regular field title", "Some value here").
-                       set_footer(Needle + std::to_string(id), "");
+    dpp::embed embed = dpp::embed()
+                           .set_color(dpp::colors::sti_blue)
+                           .set_title("Some Node Name")
+                           .set_description("Some description here")
+                           .add_field("Regular field title", "Some value here")
+                           .set_footer(Needle + std::to_string(id), "");
 
     mBot->message_create(dpp::message(channelId, embed));
   }
@@ -61,7 +64,8 @@ void nb::NodeController::onMessageCreate(const dpp::message_create_t &event)
         if (id != 0 && (mNodes.find(id) != mNodes.end()))
         {
           mNodes[id] = event.msg;
-          mLogger->info("Message created, mapped message id {} -> snowflake {}", id, mNodes[id].id);
+          mLogger->info("Message created, mapped message id {} -> snowflake {}",
+                        id, mNodes[id].id);
         }
       }
     }
