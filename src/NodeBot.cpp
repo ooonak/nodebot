@@ -77,6 +77,16 @@ class nb::NodeBotImpl
 
     return 0;
   }
+
+  bool updateNodeHandle(uint64_t id, const NodeInfo &info)
+  {
+    if (mNodeQueues != nullptr)
+    {
+      return mNodeQueues->updateNodeHandle(id, info);
+    }
+
+    return false;
+  }
 };
 
 nb::NodeBot::NodeBot(const std::string &filename)
@@ -93,4 +103,9 @@ void nb::NodeBot::stop() { return mImpl->stop(); }
 uint64_t nb::NodeBot::getHandle(const nb::NodeInfo &info)
 {
   return mImpl->getHandle(info);
+}
+
+bool nb::NodeBot::updateNodeHandle(uint64_t id, const NodeInfo &info)
+{
+  return mImpl->updateNodeHandle(id, info);
 }

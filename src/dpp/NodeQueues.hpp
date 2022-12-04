@@ -33,9 +33,9 @@ class NodeQueues
 
   uint64_t getNodeHandle(const nb::NodeInfo& info);
 
-  bool changes() const;
+  bool updateNodeHandle(uint64_t id, const nb::NodeInfo &info);
 
-  //bool getNodes(NodeHandlesT &nodes) const;
+  bool changes() const;
 
   NodeHandlesT nodes();
 

@@ -21,7 +21,7 @@ void nb::NodeController::update(dpp::snowflake channelId, const nb::NodeQueues::
     if (mNodes.find(node.id) == mNodes.end())
     {
       dpp::embed tmp;
-      tmp.set_color(dpp::colors::sti_blue);
+      tmp.set_color(dpp::colors::red);
       tmp.set_title(node.info.name);
       tmp.set_description(node.info.description);
 
@@ -36,8 +36,10 @@ void nb::NodeController::update(dpp::snowflake channelId, const nb::NodeQueues::
       mNodes[node.id] = dpp::message(channelId, tmp);
       mBot->message_create(mNodes[node.id]);
     }
-    else
+    else if (node.created != node.lastActive)
     {
+      mNodes[node.id].embeds[0].set_color(dpp::colors::green);
+
       mNodes[node.id].embeds[0].set_title(node.info.name);
       mNodes[node.id].embeds[0].set_description(node.info.description);
 
@@ -68,7 +70,7 @@ void nb::NodeController::onMessageCreate(const dpp::message_create_t &event)
         const uint64_t id = std::stoull(idStr, nullptr, 10);
         if (id != 0 && (mNodes.find(id) != mNodes.end()))
         {
-          mNodes[id].id = event.msg.id;
+          mNodes[id] = event.msg;
           mLogger->info("Message created, mapped message id {} -> snowflake {}", id, mNodes[id].id);
         }
       }

@@ -10,7 +10,8 @@ nb::NodeQueues::NodeQueues() : mLogger{spdlog::get("DPP")}
 
 uint64_t nb::NodeQueues::getNodeHandle(const nb::NodeInfo& info)
 {
-  NodeHandle handle{ .id = 0, .info = info, .created = std::chrono::system_clock::now() };
+  const auto now = std::chrono::system_clock::now();
+  NodeHandle handle{ .id = 0, .info = info, .created = now, .lastActive = now };
 
   std::lock_guard<std::mutex> lock(mMutex);
   {
@@ -24,22 +25,26 @@ uint64_t nb::NodeQueues::getNodeHandle(const nb::NodeInfo& info)
   return handle.id;
 }
 
+bool nb::NodeQueues::updateNodeHandle(uint64_t id, const nb::NodeInfo &info)
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  {
+    if (id > 0 && id <= mNodeHandles.size())
+    {
+      mNodeHandles.at(id-1).info = info;
+      mNodeHandles.at(id-1).lastActive = std::chrono::system_clock::now();
+      mChanges = true;
+      return true;
+    }
+  }
+
+  return false;
+}
+
 bool nb::NodeQueues::changes() const
 {
   return mChanges;
 }
-
-/*
-bool nb::NodeQueues::getNodes(nb::NodeQueues::NodeHandlesT &nodes) const
-{
-  if (mChanges == false)
-    return false;
-
-  std::lock_guard<std::mutex> lock(mMutex);
-  nodes = mNodeHandles;
-  return true;
-}
-*/
 
 nb::NodeQueues::NodeHandlesT nb::NodeQueues::nodes()
 {

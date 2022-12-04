@@ -24,6 +24,8 @@ class NodeBot
 
   uint64_t getHandle(const NodeInfo &info);
 
+  bool updateNodeHandle(uint64_t id, const NodeInfo &info);
+
  private:
   std::unique_ptr<NodeBotImpl> mImpl;
 };
