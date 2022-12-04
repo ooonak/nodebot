@@ -2,6 +2,7 @@ project(NodeBotUnitTests LANGUAGES CXX)
 
 add_executable(${PROJECT_NAME}
     nb/ControllerUnitTests.cpp
+    nb/NodeQueuesUnitTests.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

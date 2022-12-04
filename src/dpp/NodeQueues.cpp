@@ -15,9 +15,32 @@ uint64_t nb::NodeQueues::getNodeHandle(const nb::NodeInfo& info)
   {
     handle.id = mNodeHandles.size() + 1;
     mNodeHandles.push_back(handle);
+    mChanges = true;
   }
 
   mLogger->info("Registered new Node under id {}.", handle.id);
 
   return handle.id;
+}
+
+bool nb::NodeQueues::changes() const
+{
+  return mChanges;
+}
+
+void nb::NodeQueues::getNodesInfo(std::vector<nb::NodeInfo> &nodesInfo)
+{
+  if (mChanges == false)
+  {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(mMutex);
+  {
+    for (const auto node : mNodeHandles)
+    {
+      nodesInfo.push_back(node.info);
+    }
+    mChanges = false;
+  }
 }

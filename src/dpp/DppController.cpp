@@ -71,7 +71,7 @@ void nb::DppController::onGetGuilds(const dpp::confirmation_callback_t &event)
           "I'm a Discord bot named '{}' ({}) connected to guild '{}' ({})",
           mBot->me.username, mBot->me.id, mGuild->name, mGuild->id);
       mChannelController->start(mGuild->id);
-      mBot->start_timer(std::bind(&nb::DppController::onTimerTick, this), 3);
+      mBot->start_timer(std::bind(&nb::DppController::onTimerTick, this), mConfig.updateFrequencySeconds);
     }
   }
 }
@@ -92,9 +92,14 @@ void nb::DppController::onTimerTick()
     {
       if (mNodeController != nullptr)
       {
-        // mNodeController->update(123, "", channelId);
-        // TODO Ask NodeQueues for new nodes and set WebHook, register commands,
-        // and so on...
+        if (mNodeQueues != nullptr && mNodeQueues->changes())
+        {
+          std::vector<nb::NodeInfo> nodesInfo;
+          mNodeQueues->getNodesInfo(nodesInfo);
+
+        }
+
+        // TODO Ask NodeQueues for new nodes and set WebHook, register commands
       }
     }
   }
