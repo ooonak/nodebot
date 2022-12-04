@@ -24,6 +24,7 @@ int main()
 
     info.name = "TIE Fighter #2";
     info.description = "Galactic Empire Twin Ion Engine fighter.";
+    info.details.clear();
     info.details.push_back({"Direction", "To hell"});
     info.details.push_back({"Speed", "Fast"});
 

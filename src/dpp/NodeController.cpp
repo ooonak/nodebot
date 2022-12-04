@@ -28,6 +28,10 @@ void nb::NodeController::update(dpp::snowflake channelId, const std::vector<nb::
   for (const auto nodeInfo : nodesInfo)
   {
     mEmbedMessage.embeds[0].add_field(nodeInfo.name, nodeInfo.description);
+    for (const auto detail : nodeInfo.details)
+    {
+      mEmbedMessage.embeds[0].add_field(detail.first, detail.second, true);
+    }
   }
 
   if (mEmbedMessage.id.empty())
