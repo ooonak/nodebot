@@ -40,8 +40,7 @@ nb::DppController::DppController(const nb::Config &config,
         }
       });
 
-  mChannelController = std::make_unique<nb::ChannelController>(
-      mBot, mConfig.channelPrefix, mConfig.channelLifetimeInHours);
+  mChannelController = std::make_unique<nb::ChannelController>(mBot, mConfig.channelPrefix, mConfig.channelLifetimeInHours);
   mNodeController = std::make_unique<nb::NodeController>(mBot, config.nodeName, config.nodeDescription);
 
   mBot->on_ready(
@@ -94,10 +93,8 @@ void nb::DppController::onTimerTick()
       {
         if (mNodeQueues != nullptr && mNodeQueues->changes())
         {
-          std::vector<nb::NodeInfo> nodesInfo;
-          mNodeQueues->getNodesInfo(nodesInfo);
-          std::sort(nodesInfo.begin(), nodesInfo.end(), [](const nb::NodeInfo &a, const nb::NodeInfo &b) -> bool { return a.name < b.name; });
-          mNodeController->update(channelId, nodesInfo);
+          const nb::NodeQueues::NodeHandlesT nodes = mNodeQueues->nodes();
+          mNodeController->update(channelId, nodes);
         }
 
         // TODO Ask NodeQueues for new nodes and set WebHook, register commands

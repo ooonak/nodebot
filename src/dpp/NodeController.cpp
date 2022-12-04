@@ -1,57 +1,57 @@
-#include <sstream>
-#include <iomanip>
 #include "NodeController.hpp"
+#include <sstream>
 
 using namespace std::placeholders;
 
 static std::string Needle{"ID: "};
 
-nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot, const std::string& botName, const std::string& botDescription)
-    : mBot{bot}, mLogger{spdlog::get("DPP")}, mBotName{botName}, mBotDescription{botDescription}
+nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot, const std::string& name, const std::string &description)
+    : mBot{bot}, mLogger{spdlog::get("DPP")}, mName{name}, mDescription{description}
 {
-  mStarted = std::chrono::system_clock::now();
   mBot->on_message_create(
       std::bind(&NodeController::onMessageCreate, this, _1));
   mBot->on_message_update(
       std::bind(&NodeController::onMessageUpdate, this, _1));
 }
 
-void nb::NodeController::update(dpp::snowflake channelId, const std::vector<nb::NodeInfo> &nodesInfo)
+void nb::NodeController::update(dpp::snowflake channelId, const nb::NodeQueues::NodeHandlesT &nodes)
 {
-  // TODO What if channel has changed?
-  mEmbedMessage.channel_id = channelId;
-  mEmbedMessage.embeds.clear();
-
-  auto botEmbed = dpp::embed();
-  botEmbed.set_color(dpp::colors::sti_blue);
-  botEmbed.set_title(mBotName);
-  botEmbed.set_description(mBotDescription);
-  botEmbed.add_field("Updated", ISO8601UTC(mStarted));
-  botEmbed.set_footer(Needle + std::to_string(mId), "");
-  mEmbedMessage.embeds.push_back(botEmbed);
-
-  for (const auto nodeInfo : nodesInfo)
+  for (const auto &node : nodes)
   {
-    auto embed = dpp::embed();
-    embed.set_color(getColor());
-    embed.set_title(nodeInfo.name);
-    embed.set_description(nodeInfo.description);
-    for (const auto detail : nodeInfo.details)
+    if (mNodes.find(node.id) == mNodes.end())
     {
-      embed.add_field(detail.first, detail.second, true);
+      dpp::embed tmp;
+      tmp.set_color(dpp::colors::sti_blue);
+      tmp.set_title(node.info.name);
+      tmp.set_description(node.info.description);
+
+      for (const auto &detail : node.info.details)
+      {
+        tmp.add_field(detail.first, detail.second, true);
+      }
+
+      tmp.add_field("Created", ISO8601UTC(node.created));
+      tmp.set_footer(Needle + std::to_string(node.id), "");
+
+      mNodes[node.id] = dpp::message(channelId, tmp);
+      mBot->message_create(mNodes[node.id]);
     }
-    embed.set_footer("Created: " + ISO8601UTC(nodeInfo.created), "");
+    else
+    {
+      mNodes[node.id].embeds[0].set_title(node.info.name);
+      mNodes[node.id].embeds[0].set_description(node.info.description);
 
-    mEmbedMessage.embeds.push_back(embed);
-  }
+      mNodes[node.id].embeds[0].fields.clear();
+      for (const auto &detail : node.info.details)
+      {
+        mNodes[node.id].embeds[0].add_field(detail.first, detail.second, true);
+      }
 
-  if (mEmbedMessage.id.empty())
-  {
-    mBot->message_create(mEmbedMessage);
-  }
-  else
-  {
-    mBot->message_edit(mEmbedMessage);
+      mNodes[node.id].embeds[0].add_field("Created", ISO8601UTC(node.created));
+      mNodes[node.id].embeds[0].add_field("Last active", ISO8601UTC(node.lastActive));
+
+      mBot->message_edit(mNodes[node.id]);
+    }
   }
 }
 
@@ -66,10 +66,10 @@ void nb::NodeController::onMessageCreate(const dpp::message_create_t &event)
       {
         const auto idStr = (*footer).text.substr(idPos + Needle.length());
         const uint64_t id = std::stoull(idStr, nullptr, 10);
-        if (id != 0 && id == mId)
+        if (id != 0 && (mNodes.find(id) != mNodes.end()))
         {
-          mEmbedMessage = event.msg;
-          mLogger->info("Message created, mapped message id {} -> snowflake {}", id, mEmbedMessage.id);
+          mNodes[id].id = event.msg.id;
+          mLogger->info("Message created, mapped message id {} -> snowflake {}", id, mNodes[id].id);
         }
       }
     }
@@ -78,23 +78,27 @@ void nb::NodeController::onMessageCreate(const dpp::message_create_t &event)
 
 void nb::NodeController::onMessageUpdate(const dpp::message_update_t &event)
 {
-  mLogger->debug(__func__);
+  for (const auto embed : event.msg.embeds)
+  {
+    if (const auto footer = embed.footer)
+    {
+      const auto idPos = (*footer).text.find(Needle);
+      if (idPos != std::string::npos)
+      {
+        const auto idStr = (*footer).text.substr(idPos + Needle.length());
+        const uint64_t id = std::stoull(idStr, nullptr, 10);
+        if (id != 0 && (mNodes.find(id) != mNodes.end()))
+        {
+          mLogger->info("Message updated, message id {} -> snowflake {}", id, mNodes[id].id);
+        }
+      }
+    }
+  }
 }
 
-uint32_t nb::NodeController::getColor()
+std::string nb::NodeController::ISO8601UTC(const std::chrono::system_clock::time_point &tp)
 {
-  char temp = mRed;
-  mRed = mGreen;
-  mGreen = temp;
-  mRed += 25;
-  mGreen -= 25;
-  mBlue += mRed + mGreen;
-  return (255<<24) + (int(mRed)<<16) + (int(mGreen)<<8) + int(mBlue);
-}
-
-std::string nb::NodeController::ISO8601UTC(const std::chrono::system_clock::time_point& timep) const
-{
-  const auto then = std::chrono::system_clock::to_time_t(timep);
+  const auto then = std::chrono::system_clock::to_time_t(tp);
   std::ostringstream ss;
   ss << std::put_time(gmtime(&then), "%FT%TZ");
   return ss.str();

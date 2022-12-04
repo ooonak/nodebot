@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <chrono>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -16,6 +17,16 @@ namespace nb
 class NodeQueues
 {
  public:
+  struct NodeHandle
+  {
+    uint64_t id;
+    nb::NodeInfo info;
+    std::chrono::system_clock::time_point created;
+    std::chrono::system_clock::time_point lastActive;
+  };
+
+  using NodeHandlesT = std::vector<nb::NodeQueues::NodeHandle>;
+
   explicit NodeQueues();
 
   ~NodeQueues() = default;
@@ -24,21 +35,16 @@ class NodeQueues
 
   bool changes() const;
 
-  void getNodesInfo(std::vector<nb::NodeInfo> &nodesInfo);
+  //bool getNodes(NodeHandlesT &nodes) const;
+
+  NodeHandlesT nodes();
 
  private:
   std::shared_ptr<spdlog::logger> mLogger;
-  std::mutex mMutex;
+  mutable std::mutex mMutex;
 
   std::atomic<bool> mChanges{false};
 
-  struct NodeHandle
-  {
-    uint64_t id;
-    nb::NodeInfo info;
-  };
-
-  using NodeHandlesT = std::vector<nb::NodeQueues::NodeHandle>;
   NodeHandlesT mNodeHandles;
 };
 
