@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <string>
 #include <memory>
 #include <vector>
@@ -29,6 +30,8 @@ class NodeController
   uint64_t mId{123};
   dpp::message mEmbedMessage;
 
+  std::chrono::system_clock::time_point mStarted;
+
   char mRed{0};
   char mGreen{0};
   char mBlue{0};
@@ -37,6 +40,8 @@ class NodeController
   void onMessageUpdate(const dpp::message_update_t &event);
 
   uint32_t getColor();
+
+  std::string ISO8601UTC(const std::chrono::system_clock::time_point& timep) const;
 };
 
 }  // namespace nb

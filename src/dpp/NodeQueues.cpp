@@ -11,6 +11,8 @@ nb::NodeQueues::NodeQueues() : mLogger{spdlog::get("DPP")}
 uint64_t nb::NodeQueues::getNodeHandle(const nb::NodeInfo& info)
 {
   NodeHandle handle{0, info};
+  handle.info.created = std::chrono::system_clock::now();
+
   std::lock_guard<std::mutex> lock(mMutex);
   {
     handle.id = mNodeHandles.size() + 1;
