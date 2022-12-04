@@ -19,8 +19,16 @@ int main()
     info.details.push_back({"Direction", "To infinity"});
     info.details.push_back({"Speed", "Warp"});
 
-    uint64_t handle = bot.getHandle(info);
-    std::cout << "Got handle " << handle << std::endl;
+    uint64_t handle1 = bot.getHandle(info);
+    std::cout << "Got handle " << handle1 << std::endl;
+
+    info.name = "TIE Fighter #2";
+    info.description = "Galactic Empire Twin Ion Engine fighter.";
+    info.details.push_back({"Direction", "To hell"});
+    info.details.push_back({"Speed", "Fast"});
+
+    uint64_t handle2 = bot.getHandle(info);
+    std::cout << "Got handle " << handle2 << std::endl;
 
     std::this_thread::sleep_for(std::chrono::seconds(60));
     bot.stop();
