@@ -96,6 +96,7 @@ void nb::DppController::onTimerTick()
         {
           std::vector<nb::NodeInfo> nodesInfo;
           mNodeQueues->getNodesInfo(nodesInfo);
+          std::sort(nodesInfo.begin(), nodesInfo.end(), [](const nb::NodeInfo &a, const nb::NodeInfo &b) -> bool { return a.name < b.name; });
           mNodeController->update(channelId, nodesInfo);
         }
 

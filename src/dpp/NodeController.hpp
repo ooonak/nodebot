@@ -23,12 +23,20 @@ class NodeController
   std::shared_ptr<dpp::cluster> mBot;
   std::shared_ptr<spdlog::logger> mLogger;
 
-  // TODO Replace id
+  const std::string mBotName;
+  const std::string mBotDescription;
+
   uint64_t mId{123};
   dpp::message mEmbedMessage;
 
+  char mRed{0};
+  char mGreen{0};
+  char mBlue{0};
+
   void onMessageCreate(const dpp::message_create_t &event);
   void onMessageUpdate(const dpp::message_update_t &event);
+
+  uint32_t getColor();
 };
 
 }  // namespace nb

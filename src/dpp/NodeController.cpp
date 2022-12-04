@@ -5,14 +5,8 @@ using namespace std::placeholders;
 static std::string Needle{"ID: "};
 
 nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot, const std::string& botName, const std::string& botDescription)
-    : mBot{bot}, mLogger{spdlog::get("DPP")}
+    : mBot{bot}, mLogger{spdlog::get("DPP")}, mBotName{botName}, mBotDescription{botDescription}
 {
-  mEmbedMessage.embeds.push_back(dpp::embed());
-  mEmbedMessage.embeds[0].set_color(dpp::colors::sti_blue);
-  mEmbedMessage.embeds[0].set_title(botName);
-  mEmbedMessage.embeds[0].set_description(botDescription);
-  mEmbedMessage.embeds[0].set_footer(Needle + std::to_string(mId), "");
-
   mBot->on_message_create(
       std::bind(&NodeController::onMessageCreate, this, _1));
   mBot->on_message_update(
@@ -23,15 +17,27 @@ void nb::NodeController::update(dpp::snowflake channelId, const std::vector<nb::
 {
   // TODO What if channel has changed?
   mEmbedMessage.channel_id = channelId;
+  mEmbedMessage.embeds.clear();
 
-  mEmbedMessage.embeds[0].fields.clear();
+  auto botEmbed = dpp::embed();
+  botEmbed.set_color(dpp::colors::sti_blue);
+  botEmbed.set_title(mBotName);
+  botEmbed.set_description(mBotDescription);
+  botEmbed.set_footer(Needle + std::to_string(mId), "");
+  mEmbedMessage.embeds.push_back(botEmbed);
+
   for (const auto nodeInfo : nodesInfo)
   {
-    mEmbedMessage.embeds[0].add_field(nodeInfo.name, nodeInfo.description);
+    auto embed = dpp::embed();
+    //embed.set_color(dpp::colors::sti_blue);
+    embed.set_color(getColor());
+    embed.set_title(nodeInfo.name);
+    embed.set_description(nodeInfo.description);
     for (const auto detail : nodeInfo.details)
     {
-      mEmbedMessage.embeds[0].add_field(detail.first, detail.second, true);
+      embed.add_field(detail.first, detail.second, true);
     }
+    mEmbedMessage.embeds.push_back(embed);
   }
 
   if (mEmbedMessage.id.empty())
@@ -68,4 +74,10 @@ void nb::NodeController::onMessageCreate(const dpp::message_create_t &event)
 void nb::NodeController::onMessageUpdate(const dpp::message_update_t &event)
 {
   mLogger->debug(__func__);
+}
+
+uint32_t nb::NodeController::getColor()
+{
+  mRed += 10;
+  return (255<<24) + (int(mRed)<<16) + (int(mGreen)<<8) + int(mBlue);
 }

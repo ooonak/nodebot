@@ -18,6 +18,7 @@ int main()
     info.description = "Rebel T-65B Red Squadron.";
     info.details.push_back({"Direction", "To infinity"});
     info.details.push_back({"Speed", "Warp"});
+    info.details.push_back({"Owner", "Bertam"});
 
     uint64_t handle1 = bot.getHandle(info);
     std::cout << "Got handle " << handle1 << std::endl;
