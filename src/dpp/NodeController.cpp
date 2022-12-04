@@ -4,49 +4,39 @@ using namespace std::placeholders;
 
 static std::string Needle{"ID: "};
 
-nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot)
+nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot, const std::string& botName, const std::string& botDescription)
     : mBot{bot}, mLogger{spdlog::get("DPP")}
 {
+  mEmbedMessage.embeds.push_back(dpp::embed());
+  mEmbedMessage.embeds[0].set_color(dpp::colors::sti_blue);
+  mEmbedMessage.embeds[0].set_title(botName);
+  mEmbedMessage.embeds[0].set_description(botDescription);
+  mEmbedMessage.embeds[0].set_footer(Needle + std::to_string(mId), "");
+
   mBot->on_message_create(
       std::bind(&NodeController::onMessageCreate, this, _1));
   mBot->on_message_update(
       std::bind(&NodeController::onMessageUpdate, this, _1));
 }
 
-void nb::NodeController::update(uint64_t id, const std::string &jsonStr,
-                                dpp::snowflake channelId)
+void nb::NodeController::update(dpp::snowflake channelId, const std::vector<nb::NodeInfo> &nodesInfo)
 {
-  if (mNodes.find(id) == mNodes.end())
+  // TODO What if channel has changed?
+  mEmbedMessage.channel_id = channelId;
+
+  mEmbedMessage.embeds[0].fields.clear();
+  for (const auto nodeInfo : nodesInfo)
   {
-    mNodes[id] = dpp::message{0};
+    mEmbedMessage.embeds[0].add_field(nodeInfo.name, nodeInfo.description);
+  }
 
-    // TODO Remove test...
-    dpp::embed embed = dpp::embed()
-                           .set_color(dpp::colors::sti_blue)
-                           .set_title("Some Node Name")
-                           .set_description("Some description here")
-                           .add_field("Regular field title", "Some value here")
-                           .set_footer(Needle + std::to_string(id), "");
-
-    mBot->message_create(dpp::message(channelId, embed));
+  if (mEmbedMessage.id.empty())
+  {
+    mBot->message_create(mEmbedMessage);
   }
   else
   {
-    dpp::embed updatedEmbed = mNodes[id].embeds[0];
-
-    if (updatedEmbed.color == dpp::colors::sti_blue)
-    {
-      updatedEmbed.set_color(dpp::colors::red);
-      updatedEmbed.set_title("42");
-    }
-    else
-    {
-      updatedEmbed.set_color(dpp::colors::sti_blue);
-      updatedEmbed.set_title("!42");
-    }
-
-    mNodes[id].embeds[0] = updatedEmbed;
-    mBot->message_edit(mNodes[id]);
+    mBot->message_edit(mEmbedMessage);
   }
 }
 
@@ -61,11 +51,10 @@ void nb::NodeController::onMessageCreate(const dpp::message_create_t &event)
       {
         const auto idStr = (*footer).text.substr(idPos + Needle.length());
         const uint64_t id = std::stoull(idStr, nullptr, 10);
-        if (id != 0 && (mNodes.find(id) != mNodes.end()))
+        if (id != 0 && id == mId)
         {
-          mNodes[id] = event.msg;
-          mLogger->info("Message created, mapped message id {} -> snowflake {}",
-                        id, mNodes[id].id);
+          mEmbedMessage = event.msg;
+          mLogger->info("Message created, mapped message id {} -> snowflake {}", id, mEmbedMessage.id);
         }
       }
     }
