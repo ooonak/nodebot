@@ -14,9 +14,11 @@ struct Config
   int channelLifetimeInHours;
   int maxNodes;
   int updateFrequencySeconds;
+  std::string nodeName;
+  std::string nodeDescription;
 };  // Config
 
 }  // namespace nb
 
 TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(nb::Config, token, channelPrefix,
-                                       channelLifetimeInHours, maxNodes, updateFrequencySeconds)
+                                       channelLifetimeInHours, maxNodes, updateFrequencySeconds, nodeName, nodeDescription)
