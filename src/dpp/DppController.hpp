@@ -9,8 +9,8 @@
 #include "NodeQueues.hpp"
 #include "SlashCommandController.hpp"
 #include "WebHookController.hpp"
-#include "dpp/dpp.h"
 #include "dpp/InternalDataTypes.hpp"
+#include "dpp/dpp.h"
 #include "nlohmann/json.hpp"
 #include "spdlog/spdlog.h"
 

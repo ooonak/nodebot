@@ -1,12 +1,18 @@
 #include "NodeController.hpp"
+
 #include <sstream>
 
 using namespace std::placeholders;
 
 static std::string Needle{"ID: "};
 
-nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot, const std::string& name, const std::string &description)
-    : mBot{bot}, mLogger{spdlog::get("DPP")}, mName{name}, mDescription{description}
+nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot,
+                                   const std::string &name,
+                                   const std::string &description)
+    : mBot{bot},
+      mLogger{spdlog::get("DPP")},
+      mName{name},
+      mDescription{description}
 {
   mBot->on_message_create(
       std::bind(&NodeController::onMessageCreate, this, _1));
@@ -14,7 +20,8 @@ nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot, const std:
       std::bind(&NodeController::onMessageUpdate, this, _1));
 }
 
-void nb::NodeController::update(dpp::snowflake channelId, const nb::NodeHandlesT &nodes)
+void nb::NodeController::update(dpp::snowflake channelId,
+                                const nb::NodeHandlesT &nodes)
 {
   for (const auto &node : nodes)
   {
@@ -50,7 +57,8 @@ void nb::NodeController::update(dpp::snowflake channelId, const nb::NodeHandlesT
       }
 
       mNodes[node.id].embeds[0].add_field("Created", ISO8601UTC(node.created));
-      mNodes[node.id].embeds[0].add_field("Last active", ISO8601UTC(node.lastActive));
+      mNodes[node.id].embeds[0].add_field("Last active",
+                                          ISO8601UTC(node.lastActive));
 
       mBot->message_edit(mNodes[node.id]);
     }
@@ -71,7 +79,8 @@ void nb::NodeController::onMessageCreate(const dpp::message_create_t &event)
         if (id != 0 && (mNodes.find(id) != mNodes.end()))
         {
           mNodes[id] = event.msg;
-          mLogger->info("Message created, mapped message id {} -> snowflake {}", id, mNodes[id].id);
+          mLogger->info("Message created, mapped message id {} -> snowflake {}",
+                        id, mNodes[id].id);
         }
       }
     }
@@ -91,14 +100,16 @@ void nb::NodeController::onMessageUpdate(const dpp::message_update_t &event)
         const uint64_t id = std::stoull(idStr, nullptr, 10);
         if (id != 0 && (mNodes.find(id) != mNodes.end()))
         {
-          mLogger->info("Message updated, message id {} -> snowflake {}", id, mNodes[id].id);
+          mLogger->info("Message updated, message id {} -> snowflake {}", id,
+                        mNodes[id].id);
         }
       }
     }
   }
 }
 
-std::string nb::NodeController::ISO8601UTC(const std::chrono::system_clock::time_point &tp)
+std::string nb::NodeController::ISO8601UTC(
+    const std::chrono::system_clock::time_point &tp)
 {
   const auto then = std::chrono::system_clock::to_time_t(tp);
   std::ostringstream ss;

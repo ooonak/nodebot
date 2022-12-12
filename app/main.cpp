@@ -53,10 +53,10 @@ int main()
 
     if (!bot.registerCommand(handle2, "ping", pingCb))
     {
-      std::cerr << "Coul not register command" << std::endl;
+      std::cerr << "Could not register command" << std::endl;
     }
 
-    std::this_thread::sleep_for(std::chrono::seconds(20));
+    std::this_thread::sleep_for(std::chrono::seconds(120));
     bot.stop();
     t1.join();
   }

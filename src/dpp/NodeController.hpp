@@ -4,7 +4,6 @@
 #include <unordered_map>
 
 #include "NodeQueues.hpp"
-
 #include "dpp/dpp.h"
 #include "spdlog/spdlog.h"
 
@@ -14,7 +13,9 @@ namespace nb
 class NodeController
 {
  public:
-  explicit NodeController(std::shared_ptr<dpp::cluster> bot, const std::string& name, const std::string &description);
+  explicit NodeController(std::shared_ptr<dpp::cluster> bot,
+                          const std::string &name,
+                          const std::string &description);
 
   void update(dpp::snowflake channelId, const nb::NodeHandlesT &nodes);
 
@@ -29,7 +30,8 @@ class NodeController
   void onMessageCreate(const dpp::message_create_t &event);
   void onMessageUpdate(const dpp::message_update_t &event);
 
-  static std::string ISO8601UTC(const std::chrono::system_clock::time_point &tp);
+  static std::string ISO8601UTC(
+      const std::chrono::system_clock::time_point &tp);
 };
 
 }  // namespace nb

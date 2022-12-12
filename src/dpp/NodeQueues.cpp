@@ -11,7 +11,7 @@ nb::NodeQueues::NodeQueues() : mLogger{spdlog::get("DPP")}
 uint64_t nb::NodeQueues::getNodeHandle(const nb::NodeInfo& info)
 {
   const auto now = std::chrono::system_clock::now();
-  NodeHandle handle{ .id = 0, .info = info, .created = now, .lastActive = now };
+  NodeHandle handle{.id = 0, .info = info, .created = now, .lastActive = now};
 
   std::lock_guard<std::mutex> lock(mMutex);
   {
@@ -20,19 +20,19 @@ uint64_t nb::NodeQueues::getNodeHandle(const nb::NodeInfo& info)
     mChanges = true;
   }
 
-  mLogger->info("Registered new Node under id {}.", handle.id);
+  mLogger->debug("Registered new Node under id {}.", handle.id);
 
   return handle.id;
 }
 
-bool nb::NodeQueues::updateNodeHandle(uint64_t id, const nb::NodeInfo &info)
+bool nb::NodeQueues::updateNodeHandle(uint64_t id, const nb::NodeInfo& info)
 {
   std::lock_guard<std::mutex> lock(mMutex);
   {
     if (id > 0 && id <= mNodeHandles.size())
     {
-      mNodeHandles.at(id-1).info = info;
-      mNodeHandles.at(id-1).lastActive = std::chrono::system_clock::now();
+      mNodeHandles.at(id - 1).info = info;
+      mNodeHandles.at(id - 1).lastActive = std::chrono::system_clock::now();
       mChanges = true;
       return true;
     }
@@ -41,16 +41,19 @@ bool nb::NodeQueues::updateNodeHandle(uint64_t id, const nb::NodeInfo &info)
   return false;
 }
 
-bool nb::NodeQueues::registerCommand(uint64_t id, std::string name, nb::CmdCbT cb)
+bool nb::NodeQueues::registerCommand(uint64_t id, std::string name,
+                                     nb::CmdCbT cb)
 {
   std::lock_guard<std::mutex> lock(mMutex);
   {
     if (id > 0 && id <= mNodeHandles.size())
     {
-      auto tmp = mNodeHandles.at(id-1).commandCallbacks;
-      if (tmp.find(name) == tmp.end())
+      if (mNodeHandles.at(id - 1).commandCallbacks.find(name) ==
+          mNodeHandles.at(id - 1).commandCallbacks.end())
       {
-        tmp[name] = cb;
+        mNodeHandles.at(id - 1).commandCallbacks[name] = cb;
+        mLogger->debug("Registered command callback '{}' for node with id {}.",
+                       name, id);
         mChanges = true;
         return true;
       }
@@ -60,10 +63,7 @@ bool nb::NodeQueues::registerCommand(uint64_t id, std::string name, nb::CmdCbT c
   return false;
 }
 
-bool nb::NodeQueues::changes() const
-{
-  return mChanges;
-}
+bool nb::NodeQueues::changes() const { return mChanges; }
 
 nb::NodeHandlesT nb::NodeQueues::nodes()
 {

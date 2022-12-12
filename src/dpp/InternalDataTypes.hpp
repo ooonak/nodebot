@@ -1,21 +1,22 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <unordered_map>
 #include <chrono>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "nb/DataTypes.hpp"
 
 namespace nb
 {
-  struct NodeHandle
-  {
-    uint64_t id;
-    nb::NodeInfo info;
-    std::chrono::system_clock::time_point created;
-    std::chrono::system_clock::time_point lastActive;
-    std::unordered_map<std::string, nb::CmdCbT> commandCallbacks;
-  };
+struct NodeHandle
+{
+  uint64_t id;
+  nb::NodeInfo info;
+  std::chrono::system_clock::time_point created;
+  std::chrono::system_clock::time_point lastActive;
+  std::unordered_map<std::string, nb::CmdCbT> commandCallbacks;
+};
 
-  using NodeHandlesT = std::vector<NodeHandle>;
-} // namespace nb
+using NodeHandlesT = std::vector<NodeHandle>;
+}  // namespace nb

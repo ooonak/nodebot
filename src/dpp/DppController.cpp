@@ -40,9 +40,12 @@ nb::DppController::DppController(const nb::Config &config,
         }
       });
 
-  mChannelController = std::make_unique<nb::ChannelController>(mBot, mConfig.channelPrefix, mConfig.channelLifetimeInHours);
-  mNodeController = std::make_unique<nb::NodeController>(mBot, config.nodeName, config.nodeDescription);
-  mSlashCommandController = std::make_unique<nb::SlashCommandController>(mBot, mNodes);
+  mChannelController = std::make_unique<nb::ChannelController>(
+      mBot, mConfig.channelPrefix, mConfig.channelLifetimeInHours);
+  mNodeController = std::make_unique<nb::NodeController>(
+      mBot, config.nodeName, config.nodeDescription);
+  mSlashCommandController =
+      std::make_unique<nb::SlashCommandController>(mBot, mNodes);
 
   mBot->on_ready(
       [this](const dpp::ready_t event)
@@ -71,7 +74,8 @@ void nb::DppController::onGetGuilds(const dpp::confirmation_callback_t &event)
           "I'm a Discord bot named '{}' ({}) connected to guild '{}' ({})",
           mBot->me.username, mBot->me.id, mGuild->name, mGuild->id);
       mChannelController->start(mGuild->id);
-      mBot->start_timer(std::bind(&nb::DppController::onTimerTick, this), mConfig.updateFrequencySeconds);
+      mBot->start_timer(std::bind(&nb::DppController::onTimerTick, this),
+                        mConfig.updateFrequencySeconds);
     }
   }
 }
@@ -94,9 +98,11 @@ void nb::DppController::onTimerTick()
       {
         if (mNodeQueues != nullptr && mNodeQueues->changes())
         {
-          // Make a copy of all nodes in the queue, KISS for now. Thread-safe to work on local copy.
+          // Make a copy of all nodes in the queue, KISS for now. Thread-safe to
+          // work on local copy.
           mNodes = mNodeQueues->nodes();
           mNodeController->update(channelId, mNodes);
+          mSlashCommandController->start(mGuild->id);
         }
         // TODO Ask NodeQueues for new nodes and set WebHook, register commands
       }

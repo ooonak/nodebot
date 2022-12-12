@@ -5,12 +5,12 @@
 #include <memory>
 #include <mutex>
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
+#include "dpp/InternalDataTypes.hpp"
 #include "dpp/dpp.h"
 #include "nb/DataTypes.hpp"
-#include "dpp/InternalDataTypes.hpp"
 #include "spdlog/spdlog.h"
 
 namespace nb
@@ -25,7 +25,7 @@ class NodeQueues
 
   uint64_t getNodeHandle(const nb::NodeInfo& info);
 
-  bool updateNodeHandle(uint64_t id, const nb::NodeInfo &info);
+  bool updateNodeHandle(uint64_t id, const nb::NodeInfo& info);
 
   bool registerCommand(uint64_t id, std::string name, nb::CmdCbT cb);
 
