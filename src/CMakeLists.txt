@@ -29,6 +29,7 @@ add_library(${PROJECT_NAME}
     dpp/WebHookController.hpp
     dpp/NodeQueues.cpp
     dpp/NodeQueues.hpp
+    dpp/InternalDataTypes.hpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)

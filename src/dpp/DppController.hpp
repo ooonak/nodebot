@@ -10,6 +10,7 @@
 #include "SlashCommandController.hpp"
 #include "WebHookController.hpp"
 #include "dpp/dpp.h"
+#include "dpp/InternalDataTypes.hpp"
 #include "nlohmann/json.hpp"
 #include "spdlog/spdlog.h"
 
@@ -43,6 +44,7 @@ class DppController
   std::unique_ptr<nb::SlashCommandController> mSlashCommandController;
   std::unique_ptr<nb::WebHookController> mWebHookController;
   std::shared_ptr<nb::NodeQueues> mNodeQueues;
+  nb::NodeHandlesT mNodes;
 
   void onGetGuilds(const dpp::confirmation_callback_t &event);
 

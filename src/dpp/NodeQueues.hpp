@@ -10,6 +10,7 @@
 
 #include "dpp/dpp.h"
 #include "nb/DataTypes.hpp"
+#include "dpp/InternalDataTypes.hpp"
 #include "spdlog/spdlog.h"
 
 namespace nb
@@ -18,17 +19,6 @@ namespace nb
 class NodeQueues
 {
  public:
-  struct NodeHandle
-  {
-    uint64_t id;
-    nb::NodeInfo info;
-    std::chrono::system_clock::time_point created;
-    std::chrono::system_clock::time_point lastActive;
-    std::unordered_map<std::string, nb::CmdCbT> commandCallbacks;
-  };
-
-  using NodeHandlesT = std::vector<nb::NodeQueues::NodeHandle>;
-
   explicit NodeQueues();
 
   ~NodeQueues() = default;

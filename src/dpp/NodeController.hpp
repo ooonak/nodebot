@@ -16,7 +16,7 @@ class NodeController
  public:
   explicit NodeController(std::shared_ptr<dpp::cluster> bot, const std::string& name, const std::string &description);
 
-  void update(dpp::snowflake channelId, const nb::NodeQueues::NodeHandlesT &nodes);
+  void update(dpp::snowflake channelId, const nb::NodeHandlesT &nodes);
 
  private:
   std::shared_ptr<dpp::cluster> mBot;

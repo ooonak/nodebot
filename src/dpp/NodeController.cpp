@@ -14,7 +14,7 @@ nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot, const std:
       std::bind(&NodeController::onMessageUpdate, this, _1));
 }
 
-void nb::NodeController::update(dpp::snowflake channelId, const nb::NodeQueues::NodeHandlesT &nodes)
+void nb::NodeController::update(dpp::snowflake channelId, const nb::NodeHandlesT &nodes)
 {
   for (const auto &node : nodes)
   {

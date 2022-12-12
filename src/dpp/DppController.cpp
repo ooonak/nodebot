@@ -42,6 +42,7 @@ nb::DppController::DppController(const nb::Config &config,
 
   mChannelController = std::make_unique<nb::ChannelController>(mBot, mConfig.channelPrefix, mConfig.channelLifetimeInHours);
   mNodeController = std::make_unique<nb::NodeController>(mBot, config.nodeName, config.nodeDescription);
+  mSlashCommandController = std::make_unique<nb::SlashCommandController>(mBot, mNodes);
 
   mBot->on_ready(
       [this](const dpp::ready_t event)
@@ -93,10 +94,10 @@ void nb::DppController::onTimerTick()
       {
         if (mNodeQueues != nullptr && mNodeQueues->changes())
         {
-          const nb::NodeQueues::NodeHandlesT nodes = mNodeQueues->nodes();
-          mNodeController->update(channelId, nodes);
+          // Make a copy of all nodes in the queue, KISS for now. Thread-safe to work on local copy.
+          mNodes = mNodeQueues->nodes();
+          mNodeController->update(channelId, mNodes);
         }
-
         // TODO Ask NodeQueues for new nodes and set WebHook, register commands
       }
     }

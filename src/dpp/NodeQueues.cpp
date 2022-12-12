@@ -43,7 +43,21 @@ bool nb::NodeQueues::updateNodeHandle(uint64_t id, const nb::NodeInfo &info)
 
 bool nb::NodeQueues::registerCommand(uint64_t id, std::string name, nb::CmdCbT cb)
 {
+  std::lock_guard<std::mutex> lock(mMutex);
+  {
+    if (id > 0 && id <= mNodeHandles.size())
+    {
+      auto tmp = mNodeHandles.at(id-1).commandCallbacks;
+      if (tmp.find(name) == tmp.end())
+      {
+        tmp[name] = cb;
+        mChanges = true;
+        return true;
+      }
+    }
+  }
 
+  return false;
 }
 
 bool nb::NodeQueues::changes() const
@@ -51,7 +65,7 @@ bool nb::NodeQueues::changes() const
   return mChanges;
 }
 
-nb::NodeQueues::NodeHandlesT nb::NodeQueues::nodes()
+nb::NodeHandlesT nb::NodeQueues::nodes()
 {
   std::lock_guard<std::mutex> lock(mMutex);
   mChanges = false;
