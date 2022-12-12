@@ -3,9 +3,12 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <functional>
 
 namespace nb
 {
+
+using CmdCbT = std::function<void(const std::vector<std::string> & args)>;
 
 struct NodeInfo
 {

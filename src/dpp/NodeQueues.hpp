@@ -6,6 +6,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include "dpp/dpp.h"
 #include "nb/DataTypes.hpp"
@@ -23,6 +24,7 @@ class NodeQueues
     nb::NodeInfo info;
     std::chrono::system_clock::time_point created;
     std::chrono::system_clock::time_point lastActive;
+    std::unordered_map<std::string, nb::CmdCbT> commandCallbacks;
   };
 
   using NodeHandlesT = std::vector<nb::NodeQueues::NodeHandle>;
@@ -34,6 +36,8 @@ class NodeQueues
   uint64_t getNodeHandle(const nb::NodeInfo& info);
 
   bool updateNodeHandle(uint64_t id, const nb::NodeInfo &info);
+
+  bool registerCommand(uint64_t id, std::string name, nb::CmdCbT cb);
 
   bool changes() const;
 

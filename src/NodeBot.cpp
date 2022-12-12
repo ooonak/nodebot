@@ -87,6 +87,16 @@ class nb::NodeBotImpl
 
     return false;
   }
+
+  bool registerCommand(uint64_t id, std::string name, CmdCbT cb)
+  {
+    if (mNodeQueues != nullptr)
+    {
+      return mNodeQueues->registerCommand(id, name, cb);
+    }
+
+    return false;
+  }
 };
 
 nb::NodeBot::NodeBot(const std::string &filename)
@@ -108,4 +118,9 @@ uint64_t nb::NodeBot::getHandle(const nb::NodeInfo &info)
 bool nb::NodeBot::updateNodeHandle(uint64_t id, const NodeInfo &info)
 {
   return mImpl->updateNodeHandle(id, info);
+}
+
+bool nb::NodeBot::registerCommand(uint64_t id, std::string name, CmdCbT cb)
+{
+  return mImpl->registerCommand(id, name, cb);
 }
