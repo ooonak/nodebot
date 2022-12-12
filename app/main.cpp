@@ -41,7 +41,7 @@ int main()
     info.details.push_back({"Speed", "Stopped"});
     bot.updateNodeHandle(handle2, info);
 
-    auto pingCb = [](const std::vector<std::string> &args) -> void
+    auto pingCb = [&](const std::vector<std::string> &args) -> void
     {
       std::cout << "Ping command called, with arguments ";
       for (const auto &arg : args)
@@ -49,12 +49,17 @@ int main()
         std::cout << arg << ", ";
       }
       std::cout << std::endl;
+
+      bot.sendMessage(handle1, "Test message send on webhook :smile:");
     };
 
     if (!bot.registerCommand(handle2, "ping", pingCb))
     {
       std::cerr << "Could not register command" << std::endl;
     }
+
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+    bot.sendMessage(handle1, "Test message send on webhook :smile:");
 
     std::this_thread::sleep_for(std::chrono::seconds(120));
     bot.stop();

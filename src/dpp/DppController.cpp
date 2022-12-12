@@ -46,6 +46,8 @@ nb::DppController::DppController(const nb::Config &config,
       mBot, config.nodeName, config.nodeDescription);
   mSlashCommandController =
       std::make_unique<nb::SlashCommandController>(mBot, mNodes);
+  mWebHookController =
+      std::make_unique<nb::WebHookController>(mBot, mNodes, mNodeQueues);
 
   mBot->on_ready(
       [this](const dpp::ready_t event)
@@ -76,6 +78,7 @@ void nb::DppController::onGetGuilds(const dpp::confirmation_callback_t &event)
       mChannelController->start(mGuild->id);
       mBot->start_timer(std::bind(&nb::DppController::onTimerTick, this),
                         mConfig.updateFrequencySeconds);
+      mBot->start_timer(std::bind(&nb::DppController::onMessageTimerTick, this), 1);
     }
   }
 }
@@ -102,9 +105,40 @@ void nb::DppController::onTimerTick()
           // work on local copy.
           mNodes = mNodeQueues->nodes();
           mNodeController->update(channelId, mNodes);
-          mSlashCommandController->start(mGuild->id);
+
+          if (mSlashCommandController != nullptr)
+          {
+            mSlashCommandController->start(mGuild->id);
+          }
+
+          if (mWebHookController != nullptr)
+          {
+            for (auto & node: mNodes)
+            {
+              if (node.webHookUrl.empty())
+              {
+                mWebHookController->createWebHook(mGuild->id, channelId, node.id);
+              }
+            }
+          }
         }
-        // TODO Ask NodeQueues for new nodes and set WebHook, register commands
+      }
+    }
+  }
+}
+
+void nb::DppController::onMessageTimerTick()
+{
+  while (mNodeQueues != nullptr && mNodeQueues->messages())
+  {
+    const auto msg = mNodeQueues->popMessage();
+    if (msg.first > 0 && msg.first <= mNodes.size())
+    {
+      const auto url = mNodes.at(msg.first-1).webHookUrl;
+      if (!url.empty())
+      {
+        dpp::webhook wh(url);
+        mBot->execute_webhook_sync(wh, dpp::message(msg.second));
       }
     }
   }

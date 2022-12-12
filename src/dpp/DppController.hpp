@@ -36,6 +36,7 @@ class DppController
   std::shared_ptr<dpp::cluster> mBot;
   std::unique_ptr<dpp::guild> mGuild;
   dpp::timer mTimer;
+  dpp::timer mMessageTimer;
 
   std::atomic<bool> mStop{false};
 
@@ -49,6 +50,8 @@ class DppController
   void onGetGuilds(const dpp::confirmation_callback_t &event);
 
   void onTimerTick();
+
+  void onMessageTimerTick();
 };
 
 }  // namespace nb

@@ -63,6 +63,17 @@ bool nb::NodeQueues::registerCommand(uint64_t id, std::string name,
   return false;
 }
 
+void nb::NodeQueues::setWebHookUrl(uint64_t id, std::string url)
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  {
+    if (id > 0 && id <= mNodeHandles.size())
+    {
+      mNodeHandles.at(id - 1).webHookUrl = url;
+    }
+  }
+}
+
 bool nb::NodeQueues::changes() const { return mChanges; }
 
 nb::NodeHandlesT nb::NodeQueues::nodes()
@@ -70,4 +81,37 @@ nb::NodeHandlesT nb::NodeQueues::nodes()
   std::lock_guard<std::mutex> lock(mMutex);
   mChanges = false;
   return mNodeHandles;
+}
+
+bool nb::NodeQueues::pushMessage(uint64_t id, std::string message)
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  {
+    if (mMessageBuffer.size() < MessageBufferLimit)
+    {
+      mMessageBuffer.push_back({id, message});
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool nb::NodeQueues::messages() const
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  return !mMessageBuffer.empty();
+}
+
+nb::MessageT nb::NodeQueues::popMessage()
+{
+  std::lock_guard<std::mutex> lock(mMutex);
+  {
+    if (!mMessageBuffer.empty())
+    {
+      auto msg = mMessageBuffer.front();
+      mMessageBuffer.pop_front();
+      return msg;
+    }
+  }
 }

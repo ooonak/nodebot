@@ -28,6 +28,8 @@ class NodeBot
 
   bool registerCommand(uint64_t id, std::string name, CmdCbT cb);
 
+  bool sendMessage(uint64_t id, std::string message);
+
  private:
   std::unique_ptr<NodeBotImpl> mImpl;
 };

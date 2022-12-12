@@ -29,17 +29,29 @@ class NodeQueues
 
   bool registerCommand(uint64_t id, std::string name, nb::CmdCbT cb);
 
+  void setWebHookUrl(uint64_t id, std::string url);
+
+  bool pushMessage(uint64_t id, std::string message);
+
   bool changes() const;
 
   NodeHandlesT nodes();
 
+  bool messages() const;
+
+  MessageT popMessage();
+
  private:
+  enum { MessageBufferLimit = 100 };
+
   std::shared_ptr<spdlog::logger> mLogger;
   mutable std::mutex mMutex;
 
   std::atomic<bool> mChanges{false};
 
   NodeHandlesT mNodeHandles;
+
+  MessageBufferT mMessageBuffer;
 };
 
 }  // namespace nb
