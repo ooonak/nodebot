@@ -90,7 +90,7 @@ void nb::SlashCommandController::onSlashCommand(
       if (!node.commandCallbacks.empty())
       {
         oss << ", Commands: ";
-        for (const auto & [ key, value ] : node.commandCallbacks)
+        for (const auto &[key, value] : node.commandCallbacks)
         {
           oss << key << " ";
         }

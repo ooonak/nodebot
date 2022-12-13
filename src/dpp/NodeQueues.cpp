@@ -2,7 +2,8 @@
 
 #include <thread>
 
-nb::NodeQueues::NodeQueues() : mLogger{spdlog::get("DPP")}
+nb::NodeQueues::NodeQueues(const nb::Config& config)
+    : mConfig{config}, mLogger{spdlog::get("DPP")}
 {
   mLogger->info("Starting {} in thread {}", __func__,
                 std::hash<std::thread::id>{}(std::this_thread::get_id()));
@@ -13,7 +14,7 @@ uint64_t nb::NodeQueues::getNodeHandle(const nb::NodeInfo& info)
   const auto now = std::chrono::system_clock::now();
   NodeHandle handle{.id = 0, .info = info, .created = now, .lastActive = now};
 
-  std::lock_guard<std::mutex> lock(mMutex);
+  std::lock_guard<std::mutex> lock(mMutexNodeHandles);
   {
     handle.id = mNodeHandles.size() + 1;
     mNodeHandles.push_back(handle);
@@ -27,7 +28,7 @@ uint64_t nb::NodeQueues::getNodeHandle(const nb::NodeInfo& info)
 
 bool nb::NodeQueues::updateNodeHandle(uint64_t id, const nb::NodeInfo& info)
 {
-  std::lock_guard<std::mutex> lock(mMutex);
+  std::lock_guard<std::mutex> lock(mMutexNodeHandles);
   {
     if (id > 0 && id <= mNodeHandles.size())
     {
@@ -44,7 +45,7 @@ bool nb::NodeQueues::updateNodeHandle(uint64_t id, const nb::NodeInfo& info)
 bool nb::NodeQueues::registerCommand(uint64_t id, std::string name,
                                      nb::CmdCbT cb)
 {
-  std::lock_guard<std::mutex> lock(mMutex);
+  std::lock_guard<std::mutex> lock(mMutexNodeHandles);
   {
     if (id > 0 && id <= mNodeHandles.size())
     {
@@ -65,7 +66,7 @@ bool nb::NodeQueues::registerCommand(uint64_t id, std::string name,
 
 void nb::NodeQueues::setWebHookUrl(uint64_t id, std::string url)
 {
-  std::lock_guard<std::mutex> lock(mMutex);
+  std::lock_guard<std::mutex> lock(mMutexNodeHandles);
   {
     if (id > 0 && id <= mNodeHandles.size())
     {
@@ -78,16 +79,16 @@ bool nb::NodeQueues::changes() const { return mChanges; }
 
 nb::NodeHandlesT nb::NodeQueues::nodes()
 {
-  std::lock_guard<std::mutex> lock(mMutex);
+  std::lock_guard<std::mutex> lock(mMutexNodeHandles);
   mChanges = false;
   return mNodeHandles;
 }
 
 bool nb::NodeQueues::pushMessage(uint64_t id, std::string message)
 {
-  std::lock_guard<std::mutex> lock(mMutex);
+  std::lock_guard<std::mutex> lock(mMutexMessageBuffer);
   {
-    if (mMessageBuffer.size() < MessageBufferLimit)
+    if (mMessageBuffer.size() <= mConfig.maxMessagesInQueue)
     {
       mMessageBuffer.push_back({id, message});
       return true;
@@ -99,13 +100,13 @@ bool nb::NodeQueues::pushMessage(uint64_t id, std::string message)
 
 bool nb::NodeQueues::messages() const
 {
-  std::lock_guard<std::mutex> lock(mMutex);
+  std::lock_guard<std::mutex> lock(mMutexMessageBuffer);
   return !mMessageBuffer.empty();
 }
 
 nb::MessageT nb::NodeQueues::popMessage()
 {
-  std::lock_guard<std::mutex> lock(mMutex);
+  std::lock_guard<std::mutex> lock(mMutexMessageBuffer);
   {
     if (!mMessageBuffer.empty())
     {

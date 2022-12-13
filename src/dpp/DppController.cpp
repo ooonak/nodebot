@@ -78,7 +78,8 @@ void nb::DppController::onGetGuilds(const dpp::confirmation_callback_t &event)
       mChannelController->start(mGuild->id);
       mBot->start_timer(std::bind(&nb::DppController::onTimerTick, this),
                         mConfig.updateFrequencySeconds);
-      mBot->start_timer(std::bind(&nb::DppController::onMessageTimerTick, this), 1);
+      mBot->start_timer(std::bind(&nb::DppController::onMessageTimerTick, this),
+                        1);
     }
   }
 }
@@ -113,11 +114,12 @@ void nb::DppController::onTimerTick()
 
           if (mWebHookController != nullptr)
           {
-            for (auto & node: mNodes)
+            for (auto &node : mNodes)
             {
               if (node.webHookUrl.empty())
               {
-                mWebHookController->createWebHook(mGuild->id, channelId, node.id);
+                mWebHookController->createWebHook(mGuild->id, channelId,
+                                                  node.id);
               }
             }
           }
@@ -132,11 +134,13 @@ void nb::DppController::onMessageTimerTick()
   while (mNodeQueues != nullptr && mNodeQueues->messages())
   {
     const auto msg = mNodeQueues->popMessage();
+    mLogger->debug("Popped message {} {}", msg.first, msg.second);
     if (msg.first > 0 && msg.first <= mNodes.size())
     {
-      const auto url = mNodes.at(msg.first-1).webHookUrl;
+      const auto url = mNodes.at(msg.first - 1).webHookUrl;
       if (!url.empty())
       {
+        mLogger->debug("Sending message {} {}", msg.first, msg.second);
         dpp::webhook wh(url);
         mBot->execute_webhook_sync(wh, dpp::message(msg.second));
       }

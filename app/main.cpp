@@ -1,8 +1,8 @@
 #include <cstdlib>
+#include <functional>
 #include <iostream>
 #include <thread>
 #include <vector>
-#include <functional>
 
 #include "nb/NodeBot.hpp"
 
@@ -58,14 +58,19 @@ int main()
       std::cerr << "Could not register command" << std::endl;
     }
 
-    std::this_thread::sleep_for(std::chrono::seconds(5));
-    bot.sendMessage(handle1, "Test message send on webhook :smile:");
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+
+    for (size_t i = 0; i < 10; ++i)
+    {
+      bot.sendMessage(
+          handle1, "Test message send on webhook :smile: " + std::to_string(i));
+    }
 
     std::this_thread::sleep_for(std::chrono::seconds(120));
     bot.stop();
     t1.join();
   }
-  catch (const std::exception& exc)
+  catch (const std::exception &exc)
   {
     std::cerr << exc.what() << std::endl;
     return EXIT_FAILURE;

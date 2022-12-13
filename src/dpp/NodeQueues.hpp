@@ -7,7 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-
+#include "Config.hpp"
 #include "dpp/InternalDataTypes.hpp"
 #include "dpp/dpp.h"
 #include "nb/DataTypes.hpp"
@@ -19,7 +19,7 @@ namespace nb
 class NodeQueues
 {
  public:
-  explicit NodeQueues();
+  explicit NodeQueues(const nb::Config &config);
 
   ~NodeQueues() = default;
 
@@ -42,10 +42,10 @@ class NodeQueues
   MessageT popMessage();
 
  private:
-  enum { MessageBufferLimit = 100 };
-
+  const nb::Config &mConfig;
   std::shared_ptr<spdlog::logger> mLogger;
-  mutable std::mutex mMutex;
+  mutable std::mutex mMutexNodeHandles;
+  mutable std::mutex mMutexMessageBuffer;
 
   std::atomic<bool> mChanges{false};
 

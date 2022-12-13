@@ -46,7 +46,7 @@ class nb::NodeBotImpl
 
     setupLogging();
 
-    mNodeQueues = std::make_shared<nb::NodeQueues>();
+    mNodeQueues = std::make_shared<nb::NodeQueues>(mConfig);
     mDppController = std::make_unique<nb::DppController>(mConfig, mNodeQueues);
   }
 
@@ -100,12 +100,10 @@ class nb::NodeBotImpl
 
   bool sendMessage(uint64_t id, std::string message)
   {
-    /*
     if (mNodeQueues != nullptr)
     {
-      return mNodeQueues->registerCommand(id, name, cb);
+      return mNodeQueues->pushMessage(id, message);
     }
-    */
 
     return false;
   }
