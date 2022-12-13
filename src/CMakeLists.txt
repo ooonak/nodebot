@@ -25,8 +25,6 @@ add_library(${PROJECT_NAME}
     dpp/NodeController.hpp
     dpp/SlashCommandController.cpp
     dpp/SlashCommandController.hpp
-    dpp/WebHookController.cpp
-    dpp/WebHookController.hpp
     dpp/NodeQueues.cpp
     dpp/NodeQueues.hpp
     dpp/InternalDataTypes.hpp

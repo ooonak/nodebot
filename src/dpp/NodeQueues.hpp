@@ -29,8 +29,6 @@ class NodeQueues
 
   bool registerCommand(uint64_t id, std::string name, nb::CmdCbT cb);
 
-  void setWebHookUrl(uint64_t id, std::string url);
-
   bool pushMessage(uint64_t id, std::string message);
 
   bool changes() const;

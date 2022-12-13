@@ -8,7 +8,6 @@
 #include "NodeController.hpp"
 #include "NodeQueues.hpp"
 #include "SlashCommandController.hpp"
-#include "WebHookController.hpp"
 #include "dpp/InternalDataTypes.hpp"
 #include "dpp/dpp.h"
 #include "nlohmann/json.hpp"
@@ -43,7 +42,6 @@ class DppController
   std::unique_ptr<nb::ChannelController> mChannelController;
   std::unique_ptr<nb::NodeController> mNodeController;
   std::unique_ptr<nb::SlashCommandController> mSlashCommandController;
-  std::unique_ptr<nb::WebHookController> mWebHookController;
   std::shared_ptr<nb::NodeQueues> mNodeQueues;
   nb::NodeHandlesT mNodes;
 

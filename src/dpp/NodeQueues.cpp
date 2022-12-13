@@ -64,17 +64,6 @@ bool nb::NodeQueues::registerCommand(uint64_t id, std::string name,
   return false;
 }
 
-void nb::NodeQueues::setWebHookUrl(uint64_t id, std::string url)
-{
-  std::lock_guard<std::mutex> lock(mMutexNodeHandles);
-  {
-    if (id > 0 && id <= mNodeHandles.size())
-    {
-      mNodeHandles.at(id - 1).webHookUrl = url;
-    }
-  }
-}
-
 bool nb::NodeQueues::changes() const { return mChanges; }
 
 nb::NodeHandlesT nb::NodeQueues::nodes()

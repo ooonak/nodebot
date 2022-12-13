@@ -46,8 +46,6 @@ nb::DppController::DppController(const nb::Config &config,
       mBot, config.nodeName, config.nodeDescription);
   mSlashCommandController =
       std::make_unique<nb::SlashCommandController>(mBot, mNodes);
-  mWebHookController =
-      std::make_unique<nb::WebHookController>(mBot, mNodes, mNodeQueues);
 
   mBot->on_ready(
       [this](const dpp::ready_t event)
@@ -111,18 +109,6 @@ void nb::DppController::onTimerTick()
           {
             mSlashCommandController->start(mGuild->id);
           }
-
-          if (mWebHookController != nullptr)
-          {
-            for (auto &node : mNodes)
-            {
-              if (node.webHookUrl.empty())
-              {
-                mWebHookController->createWebHook(mGuild->id, channelId,
-                                                  node.id);
-              }
-            }
-          }
         }
       }
     }
@@ -131,18 +117,21 @@ void nb::DppController::onTimerTick()
 
 void nb::DppController::onMessageTimerTick()
 {
-  while (mNodeQueues != nullptr && mNodeQueues->messages())
+  dpp::snowflake channelId{0};
+  if (mChannelController->ready(channelId));
   {
-    const auto msg = mNodeQueues->popMessage();
-    mLogger->debug("Popped message {} {}", msg.first, msg.second);
-    if (msg.first > 0 && msg.first <= mNodes.size())
+    while (mNodeQueues != nullptr && mNodeQueues->messages())
     {
-      const auto url = mNodes.at(msg.first - 1).webHookUrl;
-      if (!url.empty())
+      const auto msg = mNodeQueues->popMessage();
+      if (msg.first > 0 && msg.first <= mNodes.size())
       {
-        mLogger->debug("Sending message {} {}", msg.first, msg.second);
-        dpp::webhook wh(url);
-        mBot->execute_webhook_sync(wh, dpp::message(msg.second));
+        std::string str = "[ID: ";
+        str.append(std::to_string(msg.first));
+        str.append(" ");
+        str.append(mNodes.at(msg.first-1).info.name);
+        str.append("] ");
+        str.append(msg.second);
+        mBot->message_create(dpp::message(channelId, str));
       }
     }
   }

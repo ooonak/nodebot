@@ -17,7 +17,6 @@ struct NodeHandle
   std::chrono::system_clock::time_point created;
   std::chrono::system_clock::time_point lastActive;
   std::unordered_map<std::string, nb::CmdCbT> commandCallbacks;
-  std::string webHookUrl;
 };
 
 using NodeHandlesT = std::vector<NodeHandle>;

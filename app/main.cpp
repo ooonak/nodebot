@@ -13,7 +13,7 @@ int main()
     nb::NodeBot bot("/tmp/nodebot.conf");
     auto t1 = std::thread([&bot]() { bot.start(); });
 
-    std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
     nb::NodeInfo info{};
     info.name = "X-Wing #1";
@@ -50,7 +50,7 @@ int main()
       }
       std::cout << std::endl;
 
-      bot.sendMessage(handle1, "Test message send on webhook :smile:");
+      bot.sendMessage(handle2, "Message send from within command");
     };
 
     if (!bot.registerCommand(handle2, "ping", pingCb))
@@ -58,13 +58,8 @@ int main()
       std::cerr << "Could not register command" << std::endl;
     }
 
-    std::this_thread::sleep_for(std::chrono::seconds(10));
-
-    for (size_t i = 0; i < 10; ++i)
-    {
-      bot.sendMessage(
-          handle1, "Test message send on webhook :smile: " + std::to_string(i));
-    }
+    bot.sendMessage(handle1, "A test message :smile:");
+    bot.sendMessage(handle2, "Another test message :smile:");
 
     std::this_thread::sleep_for(std::chrono::seconds(120));
     bot.stop();
