@@ -30,7 +30,8 @@ class ChannelController
   const std::string mSubRealm;
   const int mLifetimeHours;
 
-  std::unique_ptr<dpp::channel> mActiveChannel;
+  std::unique_ptr<dpp::channel> mCategory;
+  std::unique_ptr<dpp::channel> mChannel;
   std::vector<dpp::channel> mExpiredChannelsToDelete;
   size_t mChannelsDeleted{0};
 
@@ -38,7 +39,9 @@ class ChannelController
 
   bool mReady{false};
 
+  void onCategorysGet(const dpp::confirmation_callback_t &event);
   void onChannelsGet(const dpp::confirmation_callback_t &event);
+  void onCategoryCreate(const dpp::confirmation_callback_t &event);
   void onChannelCreate(const dpp::confirmation_callback_t &event);
   void onChannelDelete(const dpp::confirmation_callback_t &event);
 

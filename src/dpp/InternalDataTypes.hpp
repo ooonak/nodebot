@@ -1,10 +1,10 @@
 #pragma once
 
 #include <chrono>
+#include <deque>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <deque>
 
 #include "nb/DataTypes.hpp"
 

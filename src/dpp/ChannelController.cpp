@@ -8,7 +8,8 @@
 using namespace std::placeholders;
 
 nb::ChannelController::ChannelController(std::shared_ptr<dpp::cluster> bot,
-                                         std::string realm, std::string subRealm,
+                                         std::string realm,
+                                         std::string subRealm,
                                          int channelLifetimeInHours)
     : mBot{bot},
       mLogger{spdlog::get("DPP")},
@@ -22,19 +23,56 @@ void nb::ChannelController::start(dpp::snowflake guildId)
 {
   mGuildId = guildId;
   mBot->channels_get(mGuildId,
-                     std::bind(&ChannelController::onChannelsGet, this, _1));
+                     std::bind(&ChannelController::onCategorysGet, this, _1));
 }
 
 bool nb::ChannelController::ready(dpp::snowflake &id) const
 {
-  if (mReady == true && mActiveChannel != nullptr)
+  if (mReady == true && mChannel != nullptr)
   {
-    id = mActiveChannel->id;
+    id = mChannel->id;
     return true;
   }
   else
   {
     return false;
+  }
+}
+
+void nb::ChannelController::onCategorysGet(
+    const dpp::confirmation_callback_t &event)
+{
+  if (event.is_error())
+  {
+    const auto err = event.get_error();
+    mLogger->error("{} {} {}", __func__, err.code, err.message);
+  }
+  else
+  {
+    auto channels = std::get<dpp::channel_map>(event.value);
+    for (auto const &[key, value] : channels)
+    {
+      if (value.is_category() && value.name.starts_with(mRealm))
+      {
+        mLogger->info("Found a category for our realm: {} {}", value.name,
+                      value.id);
+        mCategory = std::make_unique<dpp::channel>(value);
+      }
+    }
+
+    if (mCategory == nullptr)
+    {
+      dpp::channel category;
+      category.set_name(mRealm).set_guild_id(mGuildId).set_type(
+          dpp::channel_type::CHANNEL_CATEGORY);
+      mBot->channel_create(
+          category, std::bind(&ChannelController::onCategoryCreate, this, _1));
+    }
+    else
+    {
+      mBot->channels_get(
+          mGuildId, std::bind(&ChannelController::onChannelsGet, this, _1));
+    }
   }
 }
 
@@ -48,82 +86,103 @@ void nb::ChannelController::onChannelsGet(
   }
   else
   {
-    auto channels = std::get<dpp::channel_map>(event.value);
-    dpp::snowflake newestChannelId{0};
-
-    for (auto const &[key, value] : channels)
+    if (mCategory == nullptr)
     {
-      /*
-      if (value.is_category())
-      {
-        // TODO: Get or create category channel first and use parent id for sub
-      channels. mLogger->info("{} {}", value.name, value.id);
-      }
-      */
-
-      if (value.get_type() == dpp::CHANNEL_TEXT &&
-          value.name.starts_with(mRealm))
-      {
-        bool channelExpired = channelOlderThan(value, mLifetimeHours);
-        if (channelExpired)
-        {
-          mExpiredChannelsToDelete.push_back(value);
-        }
-        else
-        {
-          if (newestChannelId == dpp::snowflake{0})
-          {
-            newestChannelId = key;
-          }
-          else if (channelCreatedAfter(value, channels.at(newestChannelId)))
-          {
-            newestChannelId = key;
-          }
-        }
-      }
-    }
-
-    if (newestChannelId != dpp::snowflake{0})
-    {
-      mActiveChannel =
-          std::make_unique<dpp::channel>(channels.at(newestChannelId));
-      mLogger->info("Setting active channel to {}, id: {}, created: {}.",
-                    mActiveChannel->name, mActiveChannel->id,
-                    ISO8601UTC(mActiveChannel->id));
-      if (mExpiredChannelsToDelete.size() == mChannelsDeleted)
-      {
-        mLogger->debug("Setting ChannelController ready.");
-        mReady = true;
-      }
+      mLogger->error(
+          "{} No category (mCategory == nullptr), should never happen!",
+          __func__);
     }
     else
     {
-      dpp::channel newChannel;
-      std::string name = mRealm;
-      const auto now = std::chrono::system_clock::now();
-      const auto itt = std::chrono::system_clock::to_time_t(now);
-      std::ostringstream ss;
-      ss << mRealm << "-" << std::put_time(gmtime(&itt), "%Y%m%d%H%M");
+      auto channels = std::get<dpp::channel_map>(event.value);
+      dpp::snowflake newestChannelId{0};
 
-      newChannel.set_name(ss.str());
-      newChannel.set_guild_id(mGuildId);
-      newChannel.set_type(dpp::channel_type::CHANNEL_TEXT);
-
-      mBot->channel_create(
-          newChannel, std::bind(&ChannelController::onChannelCreate, this, _1));
-    }
-
-    if (!mExpiredChannelsToDelete.empty())
-    {
-      for (const auto channel : mExpiredChannelsToDelete)
+      for (auto const &[key, value] : channels)
       {
-        mLogger->debug("About to delete channel {}, id: {}", channel.name,
-                       channel.id);
-        mBot->channel_delete(
-            channel.id,
-            std::bind(&ChannelController::onChannelDelete, this, _1));
+        if (value.parent_id == mCategory->id)
+        {
+          bool channelExpired = channelOlderThan(value, mLifetimeHours);
+          mLogger->info("Found a channel under category {}: {} {} {}",
+                        mCategory->name, value.name, value.id,
+                        channelExpired ? "expired" : "");
+          if (channelExpired)
+          {
+            mExpiredChannelsToDelete.push_back(value);
+          }
+          else
+          {
+            if (newestChannelId == dpp::snowflake{0})
+            {
+              newestChannelId = key;
+            }
+            else if (channelCreatedAfter(value, channels.at(newestChannelId)))
+            {
+              newestChannelId = key;
+            }
+          }
+        }
+      }
+
+      if (newestChannelId != dpp::snowflake{0})
+      {
+        mChannel = std::make_unique<dpp::channel>(channels.at(newestChannelId));
+        mLogger->info("Setting active channel to {}, id: {}, created: {}.",
+                      mChannel->name, mChannel->id, ISO8601UTC(mChannel->id));
+        if (mExpiredChannelsToDelete.size() == mChannelsDeleted)
+        {
+          mLogger->debug("Setting ChannelController ready.");
+          mReady = true;
+        }
+      }
+      else
+      {
+        dpp::channel newChannel;
+        const auto now = std::chrono::system_clock::now();
+        const auto itt = std::chrono::system_clock::to_time_t(now);
+        std::ostringstream ss;
+        ss << mSubRealm << " " << std::put_time(gmtime(&itt), "%Y %m %d %H:%M");
+
+        newChannel.set_name(ss.str());
+        newChannel.set_guild_id(mGuildId);
+        newChannel.set_parent_id(mCategory->id);
+        newChannel.set_type(dpp::channel_type::CHANNEL_TEXT);
+
+        mBot->channel_create(
+            newChannel,
+            std::bind(&ChannelController::onChannelCreate, this, _1));
+      }
+
+      if (!mExpiredChannelsToDelete.empty())
+      {
+        for (const auto channel : mExpiredChannelsToDelete)
+        {
+          mLogger->debug("About to delete channel {}, id: {}", channel.name,
+                         channel.id);
+          mBot->channel_delete(
+              channel.id,
+              std::bind(&ChannelController::onChannelDelete, this, _1));
+        }
       }
     }
+  }
+}
+
+void nb::ChannelController::onCategoryCreate(
+    const dpp::confirmation_callback_t &event)
+{
+  if (event.is_error())
+  {
+    const auto err = event.get_error();
+    mLogger->error("{} {} {}", __func__, err.code, err.message);
+  }
+  else
+  {
+    mCategory =
+        std::make_unique<dpp::channel>(std::get<dpp::channel>(event.value));
+    mLogger->info("Created category {}, id: {}.", mCategory->name,
+                  mCategory->id);
+    mBot->channels_get(mGuildId,
+                       std::bind(&ChannelController::onChannelsGet, this, _1));
   }
 }
 
@@ -137,10 +196,10 @@ void nb::ChannelController::onChannelCreate(
   }
   else
   {
-    mActiveChannel =
+    mChannel =
         std::make_unique<dpp::channel>(std::get<dpp::channel>(event.value));
-    mLogger->info("Created new channel {}, id: {}.", mActiveChannel->name,
-                  mActiveChannel->id);
+    mLogger->info("Created new channel {}, id: {}.", mChannel->name,
+                  mChannel->id);
     if (mExpiredChannelsToDelete.size() == mChannelsDeleted)
     {
       mLogger->debug("Setting ChannelController ready.");

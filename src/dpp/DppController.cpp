@@ -117,7 +117,8 @@ void nb::DppController::onTimerTick()
 void nb::DppController::onMessageTimerTick()
 {
   dpp::snowflake channelId{0};
-  if (mChannelController->ready(channelId));
+  if (mChannelController->ready(channelId))
+    ;
   {
     while (mNodeQueues != nullptr && mNodeQueues->messages())
     {
@@ -127,7 +128,7 @@ void nb::DppController::onMessageTimerTick()
         std::string str = "[ID: ";
         str.append(std::to_string(msg.first));
         str.append(" ");
-        str.append(mNodes.at(msg.first-1).info.name);
+        str.append(mNodes.at(msg.first - 1).info.name);
         str.append("] ");
         str.append(msg.second);
         mBot->message_create(dpp::message(channelId, str));
