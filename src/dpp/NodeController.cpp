@@ -6,13 +6,8 @@ using namespace std::placeholders;
 
 static std::string Needle{"ID: "};
 
-nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot,
-                                   const std::string &name,
-                                   const std::string &description)
-    : mBot{bot},
-      mLogger{spdlog::get("DPP")},
-      mName{name},
-      mDescription{description}
+nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot)
+    : mBot{bot}, mLogger{spdlog::get("DPP")}
 {
   mBot->on_message_create(
       std::bind(&NodeController::onMessageCreate, this, _1));

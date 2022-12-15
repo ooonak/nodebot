@@ -9,17 +9,22 @@ namespace nb
 
 struct Config
 {
+  // Discord bot token
   std::string token;
-  std::string channelPrefix;
+  // Used for naming category
+  std::string realm;
+  // Used for naming channel under category, prepended with time of creation.
+  std::string subRealm;
+  // On bot start, removes all channels with creation time older than this.
   int channelLifetimeInHours;
-  int maxNodes;
+  // How often to update node information.
   int updateFrequencySeconds;
-  std::string nodeName;
-  std::string nodeDescription;
+  // Maximmu number og simultanious nodes.
+  int maxNodes;
+  // No more than this number of messages in queue.
   int maxMessagesInQueue;
-};  // Config
+};
 
 }  // namespace nb
 
-TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(nb::Config, token, channelPrefix,
-                                       channelLifetimeInHours, maxNodes, updateFrequencySeconds, nodeName, nodeDescription, maxMessagesInQueue)
+TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(nb::Config, token, realm, subRealm, channelLifetimeInHours, updateFrequencySeconds, maxNodes, maxMessagesInQueue)

@@ -15,7 +15,7 @@ class ChannelController
 {
  public:
   explicit ChannelController(std::shared_ptr<dpp::cluster> bot,
-                             std::string channelPrefix,
+                             std::string realm, std::string subRealm,
                              int channelLifetimeInHours);
 
   void start(dpp::snowflake guildId);
@@ -26,7 +26,8 @@ class ChannelController
   std::shared_ptr<dpp::cluster> mBot;
   std::shared_ptr<spdlog::logger> mLogger;
 
-  const std::string mPrefix;
+  const std::string mRealm;
+  const std::string mSubRealm;
   const int mLifetimeHours;
 
   std::unique_ptr<dpp::channel> mActiveChannel;

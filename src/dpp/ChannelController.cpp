@@ -8,11 +8,12 @@
 using namespace std::placeholders;
 
 nb::ChannelController::ChannelController(std::shared_ptr<dpp::cluster> bot,
-                                         std::string channelPrefix,
+                                         std::string realm, std::string subRealm,
                                          int channelLifetimeInHours)
     : mBot{bot},
       mLogger{spdlog::get("DPP")},
-      mPrefix{channelPrefix},
+      mRealm{realm},
+      mSubRealm{subRealm},
       mLifetimeHours{channelLifetimeInHours}
 {
 }
@@ -61,7 +62,7 @@ void nb::ChannelController::onChannelsGet(
       */
 
       if (value.get_type() == dpp::CHANNEL_TEXT &&
-          value.name.starts_with(mPrefix))
+          value.name.starts_with(mRealm))
       {
         bool channelExpired = channelOlderThan(value, mLifetimeHours);
         if (channelExpired)
@@ -98,11 +99,11 @@ void nb::ChannelController::onChannelsGet(
     else
     {
       dpp::channel newChannel;
-      std::string name = mPrefix;
+      std::string name = mRealm;
       const auto now = std::chrono::system_clock::now();
       const auto itt = std::chrono::system_clock::to_time_t(now);
       std::ostringstream ss;
-      ss << mPrefix << "-" << std::put_time(gmtime(&itt), "%Y%m%d%H%M");
+      ss << mRealm << "-" << std::put_time(gmtime(&itt), "%Y%m%d%H%M");
 
       newChannel.set_name(ss.str());
       newChannel.set_guild_id(mGuildId);

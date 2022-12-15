@@ -41,9 +41,8 @@ nb::DppController::DppController(const nb::Config &config,
       });
 
   mChannelController = std::make_unique<nb::ChannelController>(
-      mBot, mConfig.channelPrefix, mConfig.channelLifetimeInHours);
-  mNodeController = std::make_unique<nb::NodeController>(
-      mBot, config.nodeName, config.nodeDescription);
+      mBot, mConfig.realm, mConfig.subRealm, mConfig.channelLifetimeInHours);
+  mNodeController = std::make_unique<nb::NodeController>(mBot);
   mSlashCommandController =
       std::make_unique<nb::SlashCommandController>(mBot, mNodes);
 
