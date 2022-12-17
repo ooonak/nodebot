@@ -111,6 +111,11 @@ void nb::DppController::onTimerTick()
         }
       }
     }
+    else if (mChannelController->errorOccured())
+    {
+      mLogger->warn("{} Eccor occured, we need to stop.", __func__);
+      mStop = true;
+    }
   }
 }
 

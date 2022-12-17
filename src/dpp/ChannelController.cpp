@@ -39,6 +39,11 @@ bool nb::ChannelController::ready(dpp::snowflake &id) const
   }
 }
 
+bool nb::ChannelController::errorOccured() const
+{
+  return mErrorOccured;
+}
+
 void nb::ChannelController::onCategorysGet(
     const dpp::confirmation_callback_t &event)
 {
@@ -46,6 +51,7 @@ void nb::ChannelController::onCategorysGet(
   {
     const auto err = event.get_error();
     mLogger->error("{} {} {}", __func__, err.code, err.message);
+    mErrorOccured = true;
   }
   else
   {
@@ -83,6 +89,7 @@ void nb::ChannelController::onChannelsGet(
   {
     const auto err = event.get_error();
     mLogger->error("{} {} {}", __func__, err.code, err.message);
+    mErrorOccured = true;
   }
   else
   {
@@ -91,6 +98,7 @@ void nb::ChannelController::onChannelsGet(
       mLogger->error(
           "{} No category (mCategory == nullptr), should never happen!",
           __func__);
+      mErrorOccured = true;
     }
     else
     {
@@ -174,6 +182,7 @@ void nb::ChannelController::onCategoryCreate(
   {
     const auto err = event.get_error();
     mLogger->error("{} {} {}", __func__, err.code, err.message);
+    mErrorOccured = true;
   }
   else
   {
@@ -193,6 +202,7 @@ void nb::ChannelController::onChannelCreate(
   {
     const auto err = event.get_error();
     mLogger->error("{} {} {}", __func__, err.code, err.message);
+    mErrorOccured = true;
   }
   else
   {
@@ -215,6 +225,7 @@ void nb::ChannelController::onChannelDelete(
   {
     const auto err = event.get_error();
     mLogger->error("{} {} {}", __func__, err.code, err.message);
+    mErrorOccured = true;
   }
   else
   {

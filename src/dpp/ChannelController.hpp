@@ -22,6 +22,8 @@ class ChannelController
 
   bool ready(dpp::snowflake &id) const;
 
+  bool errorOccured() const;
+
  private:
   std::shared_ptr<dpp::cluster> mBot;
   std::shared_ptr<spdlog::logger> mLogger;
@@ -38,6 +40,7 @@ class ChannelController
   dpp::snowflake mGuildId{0};
 
   bool mReady{false};
+  bool mErrorOccured{false};
 
   void onCategorysGet(const dpp::confirmation_callback_t &event);
   void onChannelsGet(const dpp::confirmation_callback_t &event);
