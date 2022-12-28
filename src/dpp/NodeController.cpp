@@ -40,7 +40,7 @@ void nb::NodeController::update(dpp::snowflake channelId,
 
       // 1440 = Duration after which thread auto-archives.
       // 0 = Amount of seconds a user has to wait before sending another message.
-      mBot->thread_create(std::to_string(node.id), channelId, 1440, dpp::CHANNEL_PRIVATE_THREAD, false, 0, std::bind(&NodeController::onThreadCreate, this, _1));
+      mBot->thread_create(std::to_string(node.id), channelId, 1440, dpp::CHANNEL_PUBLIC_THREAD, false, 0, std::bind(&NodeController::onThreadCreate, this, _1));
     }
     else if (node.created != node.lastActive)
     {
