@@ -75,7 +75,7 @@ void nb::NodeController::onMessageCreate(const dpp::message_create_t &event)
           "Created new embed message, node id {}, message snowflake {}", id,
           mNodes[id].message->id);
       mBot->thread_create_with_message(
-          std::to_string(id), mNodes[id].message->channel_id,
+          mNodes[id].message->embeds[0].title, mNodes[id].message->channel_id,
           mNodes[id].message->id, 1440, 0,
           std::bind(&NodeController::onThreadCreate, this, _1));
     }
