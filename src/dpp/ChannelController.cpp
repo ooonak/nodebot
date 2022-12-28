@@ -39,10 +39,7 @@ bool nb::ChannelController::ready(dpp::snowflake &id) const
   }
 }
 
-bool nb::ChannelController::errorOccured() const
-{
-  return mErrorOccured;
-}
+bool nb::ChannelController::errorOccured() const { return mErrorOccured; }
 
 void nb::ChannelController::onCategorysGet(
     const dpp::confirmation_callback_t &event)

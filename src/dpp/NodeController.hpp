@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <unordered_map>
 #include <tuple>
+#include <unordered_map>
 
 #include "NodeQueues.hpp"
 #include "dpp/dpp.h"
@@ -22,8 +22,9 @@ class NodeController
   std::shared_ptr<dpp::cluster> mBot;
   std::shared_ptr<spdlog::logger> mLogger;
 
-  struct NodeT {
-    uint64_t nodeHandleId;
+  struct NodeT
+  {
+    // uint64_t nodeHandleId;
     std::unique_ptr<dpp::thread> thread;
     std::unique_ptr<dpp::message> message;
   };
@@ -37,6 +38,13 @@ class NodeController
 
   static std::string ISO8601UTC(
       const std::chrono::system_clock::time_point &tp);
+
+  /**
+   * @brief idFromMessage Extracts id from footer in embed.
+   * @param msg
+   * @return 0 if not found else id.
+   */
+  uint64_t idFromMessage(const dpp::message &msg) const;
 };
 
 }  // namespace nb

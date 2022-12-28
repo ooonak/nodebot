@@ -10,7 +10,8 @@ nb::DppController::DppController(const nb::Config &config,
                                  std::shared_ptr<nb::NodeQueues> nodeQueues)
     : mConfig{config}, mLogger{spdlog::get("DPP")}, mNodeQueues{nodeQueues}
 {
-  mBot = std::make_shared<dpp::cluster>(mConfig.token);
+  mBot = std::make_shared<dpp::cluster>(
+      mConfig.token, dpp::i_default_intents | dpp::i_message_content);
 
   // Direct logs to spd
   mBot->on_log(
