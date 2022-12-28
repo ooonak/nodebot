@@ -156,3 +156,13 @@ uint64_t nb::NodeController::idFromMessage(const dpp::message &msg) const
 
   return id;
 }
+
+dpp::snowflake nb::NodeController::threadId(uint64_t id)
+{
+  if (mNodes.find(id) != mNodes.end() && mNodes[id].thread != nullptr)
+  {
+    return mNodes[id].thread->id;
+  }
+
+  return dpp::snowflake{};
+}

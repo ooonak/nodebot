@@ -124,20 +124,20 @@ void nb::DppController::onMessageTimerTick()
 {
   dpp::snowflake channelId{0};
   if (mChannelController->ready(channelId))
-    ;
   {
     while (mNodeQueues != nullptr && mNodeQueues->messages())
     {
       const auto msg = mNodeQueues->popMessage();
       if (msg.first > 0 && msg.first <= mNodes.size())
       {
-        std::string str = "[ID: ";
-        str.append(std::to_string(msg.first));
-        str.append(" ");
-        str.append(mNodes.at(msg.first - 1).info.name);
-        str.append("] ");
-        str.append(msg.second);
-        mBot->message_create(dpp::message(channelId, str));
+        if (mNodeController != nullptr)
+        {
+          const auto threadId = mNodeController->threadId(msg.first);
+          if (threadId != dpp::snowflake{})
+          {
+            mBot->message_create(dpp::message(threadId, msg.second));
+          }
+        }
       }
     }
   }

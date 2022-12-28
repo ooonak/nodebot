@@ -18,6 +18,8 @@ class NodeController
 
   void update(dpp::snowflake channelId, const nb::NodeHandlesT &nodes);
 
+  dpp::snowflake threadId(uint64_t id);
+
  private:
   std::shared_ptr<dpp::cluster> mBot;
   std::shared_ptr<spdlog::logger> mLogger;
