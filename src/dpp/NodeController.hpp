@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <tuple>
 
 #include "NodeQueues.hpp"
 #include "dpp/dpp.h"
@@ -20,7 +21,16 @@ class NodeController
  private:
   std::shared_ptr<dpp::cluster> mBot;
   std::shared_ptr<spdlog::logger> mLogger;
-  std::unordered_map<uint64_t, dpp::message> mNodes;
+
+  struct NodeT {
+    uint64_t nodeHandleId;
+    std::unique_ptr<dpp::thread> thread;
+    std::unique_ptr<dpp::message> message;
+  };
+
+  std::unordered_map<uint64_t, NodeT> mNodes;
+
+  void onThreadCreate(const dpp::confirmation_callback_t &event);
 
   void onMessageCreate(const dpp::message_create_t &event);
   void onMessageUpdate(const dpp::message_update_t &event);
