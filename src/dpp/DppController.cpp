@@ -41,9 +41,6 @@ nb::DppController::DppController(const nb::Config &config,
         }
       });
 
-  mChannelController = std::make_unique<nb::ChannelController>(
-      mBot, mConfig.realm, mConfig.subRealm, mConfig.channelLifetimeInHours);
-
   mBot->on_ready(
       [this](const dpp::ready_t event)
       {
@@ -70,11 +67,9 @@ void nb::DppController::onGetGuilds(const dpp::confirmation_callback_t &event)
       mLogger->info(
           "I'm a Discord bot named '{}' ({}) connected to guild '{}' ({})",
           mBot->me.username, mBot->me.id, mGuild->name, mGuild->id);
-      mChannelController->start(mGuild->id);
+
       mBot->start_timer(std::bind(&nb::DppController::onTimerTick, this),
                         mConfig.updateFrequencySeconds);
-      mBot->start_timer(std::bind(&nb::DppController::onMessageTimerTick, this),
-                        1);
     }
   }
 }
@@ -91,11 +86,23 @@ void nb::DppController::onTimerTick()
   switch (mState)
   {
     case State::Init:
-      mState = State::WaitingForChannels;
+      mChannelController = std::make_unique<nb::ChannelController>(
+          mBot, mConfig.realm, mConfig.subRealm,
+          mConfig.channelLifetimeInHours);
+      if (mChannelController != nullptr)
+      {
+        mChannelController->start(mGuild->id);
+        mState = State::WaitingForChannels;
+      }
+      else
+      {
+        mLogger->warn("{} Eccor occured, mChannelController == nullptr.",
+                      __func__);
+        mStop = true;
+      }
       break;
     case State::WaitingForChannels:
-      if (mChannelController != nullptr &&
-          mChannelController->ready(mChannelId))
+      if (mChannelController->ready(mChannelId))
       {
         mNodeController =
             std::make_unique<nb::NodeController>(mBot, mChannelId);
@@ -109,15 +116,26 @@ void nb::DppController::onTimerTick()
       }
       break;
     case State::WaitingForThreads:
-      if (mNodeController != nullptr && mNodeController->ready())
+      if (mNodeController != nullptr)
       {
-        mSlashCommandController =
-            std::make_unique<nb::SlashCommandController>(mBot, mNodes);
-        mState = State::Ready;
+        if (mNodeController->ready())
+        {
+          mSlashCommandController =
+              std::make_unique<nb::SlashCommandController>(mBot, mNodes);
+
+          mBot->start_timer(std::bind(&nb::DppController::onMessageTimerTick, this), 1);
+          mState = State::Ready;
+        }
+        else if (mNodeController->errorOccured())
+        {
+          mLogger->warn("{} Eccor occured (node controller), we need to stop.",
+                        __func__);
+          mStop = true;
+        }
       }
-      else if (mNodeController->errorOccured())
+      else
       {
-        mLogger->warn("{} Eccor occured (node controller), we need to stop.",
+        mLogger->warn("{} Eccor occured, mNodeController == nullptr.",
                       __func__);
         mStop = true;
       }

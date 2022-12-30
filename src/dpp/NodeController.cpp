@@ -10,6 +10,7 @@ nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot,
                                    dpp::snowflake channelId)
     : mBot{bot}, mChannelId{channelId}, mLogger{spdlog::get("DPP")}
 {
+  mLogger->debug("About to list threads in channel {}", mChannelId);
   mBot->threads_get_active(mChannelId,
                            std::bind(&NodeController::onThreadsList, this, _1));
 
@@ -69,6 +70,7 @@ void nb::NodeController::update(dpp::snowflake channelId,
 void nb::NodeController::onThreadsList(
     const dpp::confirmation_callback_t &event)
 {
+  /*
   if (event.is_error())
   {
     const auto err = event.get_error();
@@ -77,8 +79,17 @@ void nb::NodeController::onThreadsList(
   }
   else
   {
-    // auto channels = std::get<dpp::channel_map>(event.value);
+    auto threads = std::get<dpp::thread_map>(event.value);
+    for (auto const &[key, value] : threads)
+    {
+      mLogger->info("Thread {} {} {} exists in channel", key, value.name, value.topic);
+    }
+
+    mReady = true;
   }
+  */
+
+  mReady = true;
 }
 
 void nb::NodeController::onMessageCreate(const dpp::message_create_t &event)
