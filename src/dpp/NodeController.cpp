@@ -6,9 +6,13 @@ using namespace std::placeholders;
 
 static std::string Needle{"ID: "};
 
-nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot)
-    : mBot{bot}, mLogger{spdlog::get("DPP")}
+nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot,
+                                   dpp::snowflake channelId)
+    : mBot{bot}, mChannelId{channelId}, mLogger{spdlog::get("DPP")}
 {
+  mBot->threads_get_active(mChannelId,
+                           std::bind(&NodeController::onThreadsList, this, _1));
+
   mBot->on_message_create(
       std::bind(&NodeController::onMessageCreate, this, _1));
   mBot->on_message_update(
@@ -62,6 +66,21 @@ void nb::NodeController::update(dpp::snowflake channelId,
   }
 }
 
+void nb::NodeController::onThreadsList(
+    const dpp::confirmation_callback_t &event)
+{
+  if (event.is_error())
+  {
+    const auto err = event.get_error();
+    mLogger->error("{} {} {}", __func__, err.code, err.message);
+    mErrorOccured = true;
+  }
+  else
+  {
+    // auto channels = std::get<dpp::channel_map>(event.value);
+  }
+}
+
 void nb::NodeController::onMessageCreate(const dpp::message_create_t &event)
 {
   const uint64_t id = idFromMessage(event.msg);
@@ -89,6 +108,7 @@ void nb::NodeController::onThreadCreate(
   {
     const auto err = event.get_error();
     mLogger->error("{} {} {}", __func__, err.code, err.message);
+    mErrorOccured = true;
   }
   else
   {
@@ -166,3 +186,7 @@ dpp::snowflake nb::NodeController::threadId(uint64_t id)
 
   return dpp::snowflake{};
 }
+
+bool nb::NodeController::ready() const { return mReady; }
+
+bool nb::NodeController::errorOccured() const { return mErrorOccured; }

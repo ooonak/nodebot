@@ -34,6 +34,8 @@ class DppController
 
   std::shared_ptr<dpp::cluster> mBot;
   std::unique_ptr<dpp::guild> mGuild;
+  dpp::snowflake mChannelId;
+
   dpp::timer mTimer;
   dpp::timer mMessageTimer;
 
@@ -44,6 +46,16 @@ class DppController
   std::unique_ptr<nb::SlashCommandController> mSlashCommandController;
   std::shared_ptr<nb::NodeQueues> mNodeQueues;
   nb::NodeHandlesT mNodes;
+
+  enum class State
+  {
+    Init,
+    WaitingForChannels,
+    WaitingForThreads,
+    Ready
+  };
+
+  State mState{State::Init};
 
   void onGetGuilds(const dpp::confirmation_callback_t &event);
 

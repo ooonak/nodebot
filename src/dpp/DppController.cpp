@@ -43,9 +43,6 @@ nb::DppController::DppController(const nb::Config &config,
 
   mChannelController = std::make_unique<nb::ChannelController>(
       mBot, mConfig.realm, mConfig.subRealm, mConfig.channelLifetimeInHours);
-  mNodeController = std::make_unique<nb::NodeController>(mBot);
-  mSlashCommandController =
-      std::make_unique<nb::SlashCommandController>(mBot, mNodes);
 
   mBot->on_ready(
       [this](const dpp::ready_t event)
@@ -91,32 +88,54 @@ void nb::DppController::onTimerTick()
     return;
   }
 
-  if (mChannelController != nullptr)
+  switch (mState)
   {
-    dpp::snowflake channelId{0};
-    if (mChannelController->ready(channelId))
-    {
-      if (mNodeController != nullptr)
+    case State::Init:
+      mState = State::WaitingForChannels;
+      break;
+    case State::WaitingForChannels:
+      if (mChannelController != nullptr &&
+          mChannelController->ready(mChannelId))
       {
-        if (mNodeQueues != nullptr && mNodeQueues->changes())
-        {
-          // Make a copy of all nodes in the queue, KISS for now. Thread-safe to
-          // work on local copy.
-          mNodes = mNodeQueues->nodes();
-          mNodeController->update(channelId, mNodes);
+        mNodeController =
+            std::make_unique<nb::NodeController>(mBot, mChannelId);
+        mState = State::WaitingForThreads;
+      }
+      else if (mChannelController->errorOccured())
+      {
+        mLogger->warn("{} Eccor occured (channel controller), we need to stop.",
+                      __func__);
+        mStop = true;
+      }
+      break;
+    case State::WaitingForThreads:
+      if (mNodeController != nullptr && mNodeController->ready())
+      {
+        mSlashCommandController =
+            std::make_unique<nb::SlashCommandController>(mBot, mNodes);
+        mState = State::Ready;
+      }
+      else if (mNodeController->errorOccured())
+      {
+        mLogger->warn("{} Eccor occured (node controller), we need to stop.",
+                      __func__);
+        mStop = true;
+      }
+      break;
+    case State::Ready:
+      if (mNodeQueues != nullptr && mNodeQueues->changes())
+      {
+        // Make a copy of all nodes in the queue, KISS for now. Thread-safe to
+        // work on local copy.
+        mNodes = mNodeQueues->nodes();
+        mNodeController->update(mChannelId, mNodes);
 
-          if (mSlashCommandController != nullptr)
-          {
-            mSlashCommandController->start(mGuild->id);
-          }
+        if (mSlashCommandController != nullptr)
+        {
+          mSlashCommandController->start(mGuild->id);
         }
       }
-    }
-    else if (mChannelController->errorOccured())
-    {
-      mLogger->warn("{} Eccor occured, we need to stop.", __func__);
-      mStop = true;
-    }
+      break;
   }
 }
 

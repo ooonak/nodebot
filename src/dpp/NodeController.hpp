@@ -14,7 +14,11 @@ namespace nb
 class NodeController
 {
  public:
-  explicit NodeController(std::shared_ptr<dpp::cluster> bot);
+  explicit NodeController(std::shared_ptr<dpp::cluster> bot,
+                          dpp::snowflake channelId);
+
+  bool ready() const;
+  bool errorOccured() const;
 
   void update(dpp::snowflake channelId, const nb::NodeHandlesT &nodes);
 
@@ -22,7 +26,11 @@ class NodeController
 
  private:
   std::shared_ptr<dpp::cluster> mBot;
+  dpp::snowflake mChannelId;
   std::shared_ptr<spdlog::logger> mLogger;
+
+  bool mReady{false};
+  bool mErrorOccured{false};
 
   struct NodeT
   {
@@ -32,6 +40,8 @@ class NodeController
   };
 
   std::unordered_map<uint64_t, NodeT> mNodes;
+
+  void onThreadsList(const dpp::confirmation_callback_t &event);
 
   void onThreadCreate(const dpp::confirmation_callback_t &event);
 
