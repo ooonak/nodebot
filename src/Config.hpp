@@ -27,4 +27,5 @@ struct Config
 
 }  // namespace nb
 
-TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(nb::Config, token, realm, subRealm, channelLifetimeInHours, updateFrequencySeconds, maxNodes, maxMessagesInQueue)
+TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(nb::Config, token, realm, subRealm, channelLifetimeInHours,
+                                       updateFrequencySeconds, maxNodes, maxMessagesInQueue)

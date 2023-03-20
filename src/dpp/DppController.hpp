@@ -20,7 +20,8 @@ class DppController
 {
  public:
   explicit DppController(const nb::Config &config,
-                         std::shared_ptr<nb::NodeQueues> nodeQueues);
+                         std::shared_ptr<nb::NodeQueues> nodeQueues,
+                         const std::shared_ptr<spdlog::logger>& logger);
 
   ~DppController();
 

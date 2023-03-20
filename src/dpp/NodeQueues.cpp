@@ -1,12 +1,15 @@
 #include "NodeQueues.hpp"
-
 #include <thread>
 
-nb::NodeQueues::NodeQueues(const nb::Config& config)
-    : mConfig{config}, mLogger{spdlog::get("DPP")}
+nb::NodeQueues::NodeQueues(const nb::Config& config, const std::shared_ptr<spdlog::logger>& logger)
+    : mConfig{config}, mLogger{logger}
 {
-  mLogger->info("Starting {} in thread {}", __func__,
-                std::hash<std::thread::id>{}(std::this_thread::get_id()));
+  if (mLogger == nullptr)
+  {
+    throw std::invalid_argument("Logger is nullptr");
+  }
+
+  mLogger->info("Starting {} in thread {}", __func__, std::hash<std::thread::id>{}(std::this_thread::get_id()));
 }
 
 uint64_t nb::NodeQueues::getNodeHandle(const nb::NodeInfo& info)

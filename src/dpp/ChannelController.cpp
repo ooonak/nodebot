@@ -10,13 +10,18 @@ using namespace std::placeholders;
 nb::ChannelController::ChannelController(std::shared_ptr<dpp::cluster> bot,
                                          std::string realm,
                                          std::string subRealm,
-                                         int channelLifetimeInHours)
+                                         int channelLifetimeInHours,
+                                         const std::shared_ptr<spdlog::logger>& logger)
     : mBot{bot},
-      mLogger{spdlog::get("DPP")},
+      mLogger{logger},
       mRealm{realm},
       mSubRealm{subRealm},
       mLifetimeHours{channelLifetimeInHours}
 {
+  if (mLogger == nullptr)
+  {
+    throw std::invalid_argument("Logger is nullptr");
+  }
 }
 
 void nb::ChannelController::start(dpp::snowflake guildId)

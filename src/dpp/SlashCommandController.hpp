@@ -14,7 +14,7 @@ class SlashCommandController
 {
  public:
   explicit SlashCommandController(std::shared_ptr<dpp::cluster> bot,
-                                  nb::NodeHandlesT &nodes);
+                                  nb::NodeHandlesT &nodes, const std::shared_ptr<spdlog::logger>& logger);
 
   void start(dpp::snowflake &guildId);
 

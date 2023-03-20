@@ -3,9 +3,13 @@
 using namespace std::placeholders;
 
 nb::SlashCommandController::SlashCommandController(
-    std::shared_ptr<dpp::cluster> bot, nb::NodeHandlesT &nodes)
-    : mBot{bot}, mNodes{nodes}, mLogger{spdlog::get("DPP")}
+    std::shared_ptr<dpp::cluster> bot, nb::NodeHandlesT &nodes, const std::shared_ptr<spdlog::logger>& logger)
+    : mBot{bot}, mNodes{nodes}, mLogger{logger}
 {
+  if (mLogger == nullptr)
+  {
+    throw std::invalid_argument("Logger is nullptr");
+  }
 }
 
 void nb::SlashCommandController::start(dpp::snowflake &guildId)

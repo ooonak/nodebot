@@ -7,8 +7,8 @@
 using namespace std::placeholders;
 
 nb::DppController::DppController(const nb::Config &config,
-                                 std::shared_ptr<nb::NodeQueues> nodeQueues)
-    : mConfig{config}, mLogger{spdlog::get("DPP")}, mNodeQueues{nodeQueues}
+                                 std::shared_ptr<nb::NodeQueues> nodeQueues, const std::shared_ptr<spdlog::logger>& logger)
+    : mConfig{config}, mLogger{logger}, mNodeQueues{nodeQueues}
 {
   mBot = std::make_shared<dpp::cluster>(
       mConfig.token, dpp::i_default_intents | dpp::i_message_content);
@@ -88,7 +88,7 @@ void nb::DppController::onTimerTick()
     case State::Init:
       mChannelController = std::make_unique<nb::ChannelController>(
           mBot, mConfig.realm, mConfig.subRealm,
-          mConfig.channelLifetimeInHours);
+          mConfig.channelLifetimeInHours, mLogger);
       if (mChannelController != nullptr)
       {
         mChannelController->start(mGuild->id);
@@ -121,7 +121,7 @@ void nb::DppController::onTimerTick()
         if (mNodeController->ready())
         {
           mSlashCommandController =
-              std::make_unique<nb::SlashCommandController>(mBot, mNodes);
+              std::make_unique<nb::SlashCommandController>(mBot, mNodes, mLogger);
 
           mBot->start_timer(std::bind(&nb::DppController::onMessageTimerTick, this), 1);
           mState = State::Ready;
@@ -143,7 +143,7 @@ void nb::DppController::onTimerTick()
     case State::Ready:
       if (mNodeQueues != nullptr && mNodeQueues->changes())
       {
-        // Make a copy of all nodes in the queue, KISS for now. Thread-safe to
+        // TODO Make a copy of all nodes in the queue, KISS for now. Thread-safe to
         // work on local copy.
         mNodes = mNodeQueues->nodes();
         mNodeController->update(mChannelId, mNodes);

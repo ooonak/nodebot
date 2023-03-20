@@ -23,7 +23,7 @@ macro(EnableUseFetchContent)
     FetchContent_Declare(
       DPP
       GIT_REPOSITORY https://github.com/brainboxdotcc/DPP.git
-      GIT_TAG v10.0.21
+      GIT_TAG v10.0.23
     )
 
     FetchContent_Declare(

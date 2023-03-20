@@ -20,7 +20,7 @@ namespace nb
 class NodeQueues
 {
  public:
-  explicit NodeQueues(const nb::Config& config);
+  explicit NodeQueues(const nb::Config& config, const std::shared_ptr<spdlog::logger>& logger);
 
   ~NodeQueues() = default;
 

@@ -10,9 +10,14 @@ nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot,
                                    dpp::snowflake channelId)
     : mBot{bot}, mChannelId{channelId}, mLogger{spdlog::get("DPP")}
 {
+  if (mLogger == nullptr)
+  {
+    throw std::invalid_argument("Logger is nullptr");
+  }
+
   mLogger->debug("About to list threads in channel {}", mChannelId);
-  mBot->threads_get_active(mChannelId,
-                           std::bind(&NodeController::onThreadsList, this, _1));
+  mBot->threads_get_active(mChannelId, std::bind(&NodeController::onThreadsList, this, _1));
+  //mBot->threads_get_public_archived(mGuildId, std::time(nullptr), 100, std::bind(&NodeController::onThreadsList, this, _1));
 
   mBot->on_message_create(
       std::bind(&NodeController::onMessageCreate, this, _1));
@@ -70,12 +75,11 @@ void nb::NodeController::update(dpp::snowflake channelId,
 void nb::NodeController::onThreadsList(
     const dpp::confirmation_callback_t &event)
 {
-  /*
   if (event.is_error())
   {
     const auto err = event.get_error();
     mLogger->error("{} {} {}", __func__, err.code, err.message);
-    mErrorOccured = true;
+    //mErrorOccured = true;
   }
   else
   {
@@ -87,7 +91,7 @@ void nb::NodeController::onThreadsList(
 
     mReady = true;
   }
-  */
+
 
   mReady = true;
 }
