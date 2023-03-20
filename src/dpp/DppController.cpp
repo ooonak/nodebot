@@ -10,8 +10,12 @@ nb::DppController::DppController(const nb::Config &config,
                                  std::shared_ptr<nb::NodeQueues> nodeQueues, const std::shared_ptr<spdlog::logger>& logger)
     : mConfig{config}, mLogger{logger}, mNodeQueues{nodeQueues}
 {
-  mBot = std::make_shared<dpp::cluster>(
-      mConfig.token, dpp::i_default_intents | dpp::i_message_content);
+  if (mLogger == nullptr)
+  {
+    throw std::invalid_argument("Logger is nullptr");
+  }
+
+  mBot = std::make_shared<dpp::cluster>(mConfig.token, dpp::i_default_intents | dpp::i_message_content);
 
   // Direct logs to spd
   mBot->on_log(
@@ -87,8 +91,7 @@ void nb::DppController::onTimerTick()
   {
     case State::Init:
       mChannelController = std::make_unique<nb::ChannelController>(
-          mBot, mConfig.realm, mConfig.subRealm,
-          mConfig.channelLifetimeInHours, mLogger);
+          mBot, mConfig.realm, mConfig.subRealm, mConfig.channelLifetimeInHours, mLogger);
       if (mChannelController != nullptr)
       {
         mChannelController->start(mGuild->id);
@@ -96,22 +99,19 @@ void nb::DppController::onTimerTick()
       }
       else
       {
-        mLogger->warn("{} Eccor occured, mChannelController == nullptr.",
-                      __func__);
+        mLogger->warn("{} Eccor occured, mChannelController == nullptr.", __func__);
         mStop = true;
       }
       break;
     case State::WaitingForChannels:
       if (mChannelController->ready(mChannelId))
       {
-        mNodeController =
-            std::make_unique<nb::NodeController>(mBot, mChannelId);
+        mNodeController = std::make_unique<nb::NodeController>(mBot, mChannelId);
         mState = State::WaitingForThreads;
       }
       else if (mChannelController->errorOccured())
       {
-        mLogger->warn("{} Eccor occured (channel controller), we need to stop.",
-                      __func__);
+        mLogger->warn("{} Eccor occured (channel controller), we need to stop.", __func__);
         mStop = true;
       }
       break;
@@ -120,23 +120,19 @@ void nb::DppController::onTimerTick()
       {
         if (mNodeController->ready())
         {
-          mSlashCommandController =
-              std::make_unique<nb::SlashCommandController>(mBot, mNodes, mLogger);
-
+          // TODO mSlashCommandController = std::make_unique<nb::SlashCommandController>(mBot, mNodes, mLogger);
           mBot->start_timer(std::bind(&nb::DppController::onMessageTimerTick, this), 1);
           mState = State::Ready;
         }
         else if (mNodeController->errorOccured())
         {
-          mLogger->warn("{} Eccor occured (node controller), we need to stop.",
-                        __func__);
+          mLogger->warn("{} Eccor occured (node controller), we need to stop.", __func__);
           mStop = true;
         }
       }
       else
       {
-        mLogger->warn("{} Eccor occured, mNodeController == nullptr.",
-                      __func__);
+        mLogger->warn("{} Eccor occured, mNodeController == nullptr.", __func__);
         mStop = true;
       }
       break;
@@ -185,8 +181,7 @@ void nb::DppController::start()
   if (mBot != nullptr)
   {
     mLogger->info("Starting DppController in thread {} (Dpp {})", __func__,
-                  std::hash<std::thread::id>{}(std::this_thread::get_id()),
-                  dpp::utility::version());
+                  std::hash<std::thread::id>{}(std::this_thread::get_id()), dpp::utility::version());
     mBot->start(dpp::st_wait);
   }
 }

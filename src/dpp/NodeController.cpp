@@ -6,8 +6,7 @@ using namespace std::placeholders;
 
 static std::string Needle{"ID: "};
 
-nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot,
-                                   dpp::snowflake channelId)
+nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot, dpp::snowflake channelId)
     : mBot{bot}, mChannelId{channelId}, mLogger{spdlog::get("DPP")}
 {
   if (mLogger == nullptr)
@@ -19,14 +18,11 @@ nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot,
   mBot->threads_get_active(mChannelId, std::bind(&NodeController::onThreadsList, this, _1));
   //mBot->threads_get_public_archived(mGuildId, std::time(nullptr), 100, std::bind(&NodeController::onThreadsList, this, _1));
 
-  mBot->on_message_create(
-      std::bind(&NodeController::onMessageCreate, this, _1));
-  mBot->on_message_update(
-      std::bind(&NodeController::onMessageUpdate, this, _1));
+  mBot->on_message_create(std::bind(&NodeController::onMessageCreate, this, _1));
+  mBot->on_message_update(std::bind(&NodeController::onMessageUpdate, this, _1));
 }
 
-void nb::NodeController::update(dpp::snowflake channelId,
-                                const nb::NodeHandlesT &nodes)
+void nb::NodeController::update(dpp::snowflake channelId, const nb::NodeHandlesT &nodes)
 {
   for (const auto &node : nodes)
   {
@@ -59,21 +55,17 @@ void nb::NodeController::update(dpp::snowflake channelId,
         mNodes[node.id].message->embeds[0].fields.clear();
         for (const auto &detail : node.info.details)
         {
-          mNodes[node.id].message->embeds[0].add_field(detail.first,
-                                                       detail.second, true);
+          mNodes[node.id].message->embeds[0].add_field(detail.first, detail.second, true);
         }
-        mNodes[node.id].message->embeds[0].add_field("Created",
-                                                     ISO8601UTC(node.created));
-        mNodes[node.id].message->embeds[0].add_field(
-            "Last active", ISO8601UTC(node.lastActive));
+        mNodes[node.id].message->embeds[0].add_field("Created", ISO8601UTC(node.created));
+        mNodes[node.id].message->embeds[0].add_field("Last active", ISO8601UTC(node.lastActive));
         mBot->message_edit(*mNodes[node.id].message);
       }
     }
   }
 }
 
-void nb::NodeController::onThreadsList(
-    const dpp::confirmation_callback_t &event)
+void nb::NodeController::onThreadsList(const dpp::confirmation_callback_t &event)
 {
   if (event.is_error())
   {
@@ -105,19 +97,14 @@ void nb::NodeController::onMessageCreate(const dpp::message_create_t &event)
     if (mNodes[id].thread == nullptr)
     {
       // First message for this node id, create thread.
-      mLogger->info(
-          "Created new embed message, node id {}, message snowflake {}", id,
-          mNodes[id].message->id);
-      mBot->thread_create_with_message(
-          mNodes[id].message->embeds[0].title, mNodes[id].message->channel_id,
-          mNodes[id].message->id, 1440, 0,
-          std::bind(&NodeController::onThreadCreate, this, _1));
+      mLogger->info("Created new embed message, node id {}, message snowflake {}", id, mNodes[id].message->id);
+      mBot->thread_create_with_message(mNodes[id].message->embeds[0].title, mNodes[id].message->channel_id,
+          mNodes[id].message->id, 1440, 0, std::bind(&NodeController::onThreadCreate, this, _1));
     }
   }
 }
 
-void nb::NodeController::onThreadCreate(
-    const dpp::confirmation_callback_t &event)
+void nb::NodeController::onThreadCreate(const dpp::confirmation_callback_t &event)
 {
   if (event.is_error())
   {
@@ -131,15 +118,10 @@ void nb::NodeController::onThreadCreate(
     {
       auto &node = pair.second;
       // Message and thread snowflake is the same.
-      if (node.thread == nullptr && node.message != nullptr &&
-          std::get<dpp::thread>(event.value).id == node.message->id)
+      if (node.thread == nullptr && node.message != nullptr && std::get<dpp::thread>(event.value).id == node.message->id)
       {
-        node.thread =
-            std::make_unique<dpp::thread>(std::get<dpp::thread>(event.value));
-        mLogger->info(
-            "Created new thread, node id {}, thread snowflake {}, channel "
-            "snowflake {}.",
-            node.thread->name, node.thread->id, node.thread->parent_id);
+        node.thread = std::make_unique<dpp::thread>(std::get<dpp::thread>(event.value));
+        mLogger->info("Created new thread, node id {}, thread snowflake {}, channel snowflake {}.", node.thread->name, node.thread->id, node.thread->parent_id);
       }
     }
   }
@@ -151,8 +133,7 @@ void nb::NodeController::onMessageUpdate(const dpp::message_update_t &event)
   if (id != 0 && mNodes.find(id) != mNodes.end())
   {
     mNodes[id].message = std::make_unique<dpp::message>(event.msg);
-    mLogger->info("Message updated, node id {}, message snowflake {}", id,
-                  mNodes[id].message->id);
+    mLogger->info("Message updated, node id {}, message snowflake {}", id, mNodes[id].message->id);
   }
 }
 

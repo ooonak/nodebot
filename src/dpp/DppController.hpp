@@ -58,10 +58,20 @@ class DppController
 
   State mState{State::Init};
 
+  /**
+   * @brief onGetGuilds: Callack is called when we are connected and get information about the Discord server.
+   * @param event
+   */
   void onGetGuilds(const dpp::confirmation_callback_t &event);
 
+  /**
+   * @brief onTimerTick: Drives state machine.
+   */
   void onTimerTick();
 
+  /**
+   * @brief onMessageTimerTick: Polls and sends messages from queue if any.
+   */
   void onMessageTimerTick();
 };
 

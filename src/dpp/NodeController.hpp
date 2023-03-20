@@ -18,6 +18,7 @@ class NodeController
                           dpp::snowflake channelId);
 
   bool ready() const;
+
   bool errorOccured() const;
 
   void update(dpp::snowflake channelId, const nb::NodeHandlesT &nodes);
@@ -46,10 +47,10 @@ class NodeController
   void onThreadCreate(const dpp::confirmation_callback_t &event);
 
   void onMessageCreate(const dpp::message_create_t &event);
+
   void onMessageUpdate(const dpp::message_update_t &event);
 
-  static std::string ISO8601UTC(
-      const std::chrono::system_clock::time_point &tp);
+  static std::string ISO8601UTC(const std::chrono::system_clock::time_point &tp);
 
   /**
    * @brief idFromMessage Extracts id from footer in embed.

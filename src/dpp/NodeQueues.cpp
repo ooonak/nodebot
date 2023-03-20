@@ -45,8 +45,7 @@ bool nb::NodeQueues::updateNodeHandle(uint64_t id, const nb::NodeInfo& info)
   return false;
 }
 
-bool nb::NodeQueues::registerCommand(uint64_t id, std::string name,
-                                     nb::CmdCbT cb)
+bool nb::NodeQueues::registerCommand(uint64_t id, std::string name, nb::CmdCbT cb)
 {
   std::lock_guard<std::mutex> lock(mMutexNodeHandles);
   {
