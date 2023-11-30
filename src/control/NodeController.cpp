@@ -6,8 +6,8 @@ using namespace std::placeholders;
 
 static std::string Needle{"ID: "};
 
-ok::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot, dpp::snowflake channelId)
-    : mBot{bot}, mChannelId{channelId}, mLogger{spdlog::get("DPP")}
+ok::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot, dpp::snowflake channelId, const std::shared_ptr<spdlog::logger>& logger)
+    : mBot{bot}, mChannelId{channelId}, mLogger{logger}
 {
   if (mLogger == nullptr)
   {

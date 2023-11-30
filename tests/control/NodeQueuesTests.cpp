@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "dpp/NodeQueues.hpp"
+#include "control/NodeQueues.hpp"
 
 TEST(NodeQueues, Dummy)
 {

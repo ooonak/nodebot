@@ -1,5 +1,4 @@
-#include "dpp/DppController.hpp"
-
+#include "control/DppController.hpp"
 #include <functional>
 #include <iostream>
 #include <thread>
@@ -103,7 +102,7 @@ void ok::DppController::onTimerTick()
     case State::WaitingForChannels:
       if (mChannelController->ready(mChannelId))
       {
-        mNodeController = std::make_unique<ok::NodeController>(mBot, mChannelId);
+        mNodeController = std::make_unique<ok::NodeController>(mBot, mChannelId, mLogger);
         mState = State::WaitingForThreads;
       }
       else if (mChannelController->errorOccured())

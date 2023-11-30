@@ -83,8 +83,9 @@ int main()
     bot.sendMessage(handle1, "A tests message :smile:");
     bot.sendMessage(handle2, "Another tests message :smile:");
 
-    std::this_thread::sleep_for(std::chrono::seconds(120));
+    std::this_thread::sleep_for(std::chrono::seconds(180));
     bot.stop();
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     t1.join();
   }
   catch (const std::exception &exc)

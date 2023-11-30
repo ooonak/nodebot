@@ -123,7 +123,7 @@ void ok::SlashCommandController::onSlashCommand(const dpp::slashcommand_t &event
         itUMap->second(args);
 
         const auto end = std::chrono::steady_clock::now();
-        // TODO One could look into dpp::utility::exec to execute command in
+        // TODO One could look into control::utility::exec to execute command in
         // other thread.
         event.reply("Job done after " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()) + " ms.");
       }

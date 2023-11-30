@@ -14,8 +14,7 @@ namespace ok
 class NodeController
 {
  public:
-  explicit NodeController(std::shared_ptr<dpp::cluster> bot,
-                          dpp::snowflake channelId);
+  explicit NodeController(std::shared_ptr<dpp::cluster> bot, dpp::snowflake channelId, const std::shared_ptr<spdlog::logger>& logger);
 
   bool ready() const;
 

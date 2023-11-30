@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "InternalDataTypes.hpp"
-#include "dpp/InternalDataTypes.hpp"
+#include "control/InternalDataTypes.hpp"
 #include "dpp/dpp.h"
 #include "spdlog/spdlog.h"
 

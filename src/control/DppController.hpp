@@ -7,9 +7,8 @@
 #include "NodeController.hpp"
 #include "NodeQueues.hpp"
 #include "SlashCommandController.hpp"
-#include "dpp/InternalDataTypes.hpp"
+#include "control/InternalDataTypes.hpp"
 #include "dpp/dpp.h"
-#include "nlohmann/json.hpp"
 #include "spdlog/spdlog.h"
 
 namespace ok

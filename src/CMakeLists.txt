@@ -34,17 +34,17 @@ add_library(${PROJECT_NAME}
     include/NodeBot/DataTypes.hpp
     Config.hpp
     NodeBot.cpp
-    dpp/ChannelController.cpp
-    dpp/ChannelController.hpp
-    dpp/DppController.cpp
-    dpp/DppController.hpp
-    dpp/NodeController.cpp
-    dpp/NodeController.hpp
-    dpp/SlashCommandController.cpp
-    dpp/SlashCommandController.hpp
-    dpp/NodeQueues.cpp
-    dpp/NodeQueues.hpp
-    dpp/InternalDataTypes.hpp
+        control/ChannelController.cpp
+        control/ChannelController.hpp
+        control/DppController.cpp
+        control/DppController.hpp
+        control/NodeController.cpp
+        control/NodeController.hpp
+        control/SlashCommandController.cpp
+        control/SlashCommandController.hpp
+        control/NodeQueues.cpp
+        control/NodeQueues.hpp
+        control/InternalDataTypes.hpp
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -53,13 +53,14 @@ target_link_libraries(${PROJECT_NAME}
     spdlog::spdlog
     toml11::toml11
     nlohmann_json::nlohmann_json
-    DPP
+    dpp
 )
 
 target_include_directories(
     ${PROJECT_NAME}
-    PUBLIC
-    ${DPP_INCLUDE_DIR}
+    PRIVATE
+    ${toml_SOURCE_DIR}
+    ${dpp_SOURCE_DIR}/include
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)

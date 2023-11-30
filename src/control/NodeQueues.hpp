@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 #include "Config.hpp"
-#include "dpp/InternalDataTypes.hpp"
+#include "control/InternalDataTypes.hpp"
 #include "dpp/dpp.h"
 #include "NodeBot/DataTypes.hpp"
 #include "spdlog/spdlog.h"
