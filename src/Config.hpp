@@ -4,7 +4,7 @@
 
 #include "toml.hpp"
 
-namespace nb
+namespace ok
 {
 
 struct Config
@@ -25,7 +25,7 @@ struct Config
   int maxMessagesInQueue;
 };
 
-}  // namespace nb
+}  // namespace NodeBot
 
-TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(nb::Config, token, realm, subRealm, channelLifetimeInHours,
+TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(ok::Config, token, realm, subRealm, channelLifetimeInHours,
                                        updateFrequencySeconds, maxNodes, maxMessagesInQueue)

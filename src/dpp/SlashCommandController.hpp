@@ -7,20 +7,19 @@
 #include "dpp/dpp.h"
 #include "spdlog/spdlog.h"
 
-namespace nb
+namespace ok
 {
 
 class SlashCommandController
 {
  public:
-  explicit SlashCommandController(std::shared_ptr<dpp::cluster> bot,
-                                  nb::NodeHandlesT &nodes, const std::shared_ptr<spdlog::logger>& logger);
+  explicit SlashCommandController(std::shared_ptr<dpp::cluster> bot, ok::NodeHandlesT &nodes, const std::shared_ptr<spdlog::logger>& logger);
 
   void start(dpp::snowflake &guildId);
 
  private:
   std::shared_ptr<dpp::cluster> mBot;
-  nb::NodeHandlesT &mNodes;
+  ok::NodeHandlesT &mNodes;
   std::shared_ptr<spdlog::logger> mLogger;
 
   bool mInitialized{false};
@@ -34,4 +33,4 @@ class SlashCommandController
   };
 };
 
-}  // namespace nb
+}  // namespace NodeBot

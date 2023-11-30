@@ -1,9 +1,21 @@
-project(NodeBotApp LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.24)
 
-    add_executable(${PROJECT_NAME} main.cpp)
+project(NodeBotApp)
 
-        set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON)
+# dependencies
+find_package(spdlog REQUIRED)
 
-            target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+add_executable(${PROJECT_NAME}
+        main.cpp
+)
 
-                target_link_libraries(${PROJECT_NAME} PRIVATE NodeBot::NodeBot)
+set_target_properties(${PROJECT_NAME}
+        PROPERTIES
+        CXX_STANDARD 23
+        CXX_STANDARD_REQUIRED ON
+)
+
+target_link_libraries(${PROJECT_NAME}
+        PRIVATE
+        ok::NodeBot
+)

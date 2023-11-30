@@ -5,7 +5,7 @@
 #include <vector>
 #include <functional>
 
-namespace nb
+namespace ok
 {
 
 using CmdCbT = std::function<void(const std::vector<std::string> & args)>;
@@ -17,4 +17,4 @@ struct NodeInfo
   std::vector<std::pair<std::string, std::string>> details;
 };
 
-}  // namespace nb
+}  // namespace NodeBot

@@ -1,7 +1,7 @@
 #include "NodeQueues.hpp"
 #include <thread>
 
-nb::NodeQueues::NodeQueues(const nb::Config& config, const std::shared_ptr<spdlog::logger>& logger)
+ok::NodeQueues::NodeQueues(const ok::Config& config, const std::shared_ptr<spdlog::logger>& logger)
     : mConfig{config}, mLogger{logger}
 {
   if (mLogger == nullptr)
@@ -12,7 +12,7 @@ nb::NodeQueues::NodeQueues(const nb::Config& config, const std::shared_ptr<spdlo
   mLogger->info("Starting {} in thread {}", __func__, std::hash<std::thread::id>{}(std::this_thread::get_id()));
 }
 
-uint64_t nb::NodeQueues::getNodeHandle(const nb::NodeInfo& info)
+uint64_t ok::NodeQueues::getNodeHandle(const ok::NodeInfo& info)
 {
   const auto now = std::chrono::system_clock::now();
   NodeHandle handle{.id = 0, .info = info, .created = now, .lastActive = now};
@@ -29,7 +29,7 @@ uint64_t nb::NodeQueues::getNodeHandle(const nb::NodeInfo& info)
   return handle.id;
 }
 
-bool nb::NodeQueues::updateNodeHandle(uint64_t id, const nb::NodeInfo& info)
+bool ok::NodeQueues::updateNodeHandle(uint64_t id, const ok::NodeInfo& info)
 {
   std::lock_guard<std::mutex> lock(mMutexNodeHandles);
   {
@@ -45,7 +45,7 @@ bool nb::NodeQueues::updateNodeHandle(uint64_t id, const nb::NodeInfo& info)
   return false;
 }
 
-bool nb::NodeQueues::registerCommand(uint64_t id, std::string name, nb::CmdCbT cb)
+bool ok::NodeQueues::registerCommand(uint64_t id, std::string name, ok::CmdCbT cb)
 {
   std::lock_guard<std::mutex> lock(mMutexNodeHandles);
   {
@@ -66,16 +66,16 @@ bool nb::NodeQueues::registerCommand(uint64_t id, std::string name, nb::CmdCbT c
   return false;
 }
 
-bool nb::NodeQueues::changes() const { return mChanges; }
+bool ok::NodeQueues::changes() const { return mChanges; }
 
-nb::NodeHandlesT nb::NodeQueues::nodes()
+ok::NodeHandlesT ok::NodeQueues::nodes()
 {
   std::lock_guard<std::mutex> lock(mMutexNodeHandles);
   mChanges = false;
   return mNodeHandles;
 }
 
-bool nb::NodeQueues::pushMessage(uint64_t id, std::string message)
+bool ok::NodeQueues::pushMessage(uint64_t id, std::string message)
 {
   std::lock_guard<std::mutex> lock(mMutexMessageBuffer);
   {
@@ -89,13 +89,13 @@ bool nb::NodeQueues::pushMessage(uint64_t id, std::string message)
   return false;
 }
 
-bool nb::NodeQueues::messages() const
+bool ok::NodeQueues::messages() const
 {
   std::lock_guard<std::mutex> lock(mMutexMessageBuffer);
   return !mMessageBuffer.empty();
 }
 
-nb::MessageT nb::NodeQueues::popMessage()
+ok::MessageT ok::NodeQueues::popMessage()
 {
   std::lock_guard<std::mutex> lock(mMutexMessageBuffer);
   {

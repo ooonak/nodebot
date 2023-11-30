@@ -7,28 +7,27 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-
 #include "Config.hpp"
 #include "dpp/InternalDataTypes.hpp"
 #include "dpp/dpp.h"
-#include "nb/DataTypes.hpp"
+#include "NodeBot/DataTypes.hpp"
 #include "spdlog/spdlog.h"
 
-namespace nb
+namespace ok
 {
 
 class NodeQueues
 {
  public:
-  explicit NodeQueues(const nb::Config& config, const std::shared_ptr<spdlog::logger>& logger);
+  explicit NodeQueues(const ok::Config& config, const std::shared_ptr<spdlog::logger>& logger);
 
   ~NodeQueues() = default;
 
-  uint64_t getNodeHandle(const nb::NodeInfo& info);
+  uint64_t getNodeHandle(const ok::NodeInfo& info);
 
-  bool updateNodeHandle(uint64_t id, const nb::NodeInfo& info);
+  bool updateNodeHandle(uint64_t id, const ok::NodeInfo& info);
 
-  bool registerCommand(uint64_t id, std::string name, nb::CmdCbT cb);
+  bool registerCommand(uint64_t id, std::string name, ok::CmdCbT cb);
 
   bool pushMessage(uint64_t id, std::string message);
 
@@ -41,7 +40,7 @@ class NodeQueues
   MessageT popMessage();
 
  private:
-  const nb::Config& mConfig;
+  const ok::Config& mConfig;
   std::shared_ptr<spdlog::logger> mLogger;
   mutable std::mutex mMutexNodeHandles;
   mutable std::mutex mMutexMessageBuffer;
@@ -53,4 +52,4 @@ class NodeQueues
   MessageBufferT mMessageBuffer;
 };
 
-}  // namespace nb
+}  // namespace NodeBot

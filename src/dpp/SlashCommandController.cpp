@@ -2,8 +2,8 @@
 
 using namespace std::placeholders;
 
-nb::SlashCommandController::SlashCommandController(
-    std::shared_ptr<dpp::cluster> bot, nb::NodeHandlesT &nodes, const std::shared_ptr<spdlog::logger>& logger)
+ok::SlashCommandController::SlashCommandController(
+    std::shared_ptr<dpp::cluster> bot, ok::NodeHandlesT &nodes, const std::shared_ptr<spdlog::logger>& logger)
     : mBot{bot}, mNodes{nodes}, mLogger{logger}
 {
   if (mLogger == nullptr)
@@ -12,7 +12,7 @@ nb::SlashCommandController::SlashCommandController(
   }
 }
 
-void nb::SlashCommandController::start(dpp::snowflake &guildId)
+void ok::SlashCommandController::start(dpp::snowflake &guildId)
 {
   if (!mInitialized)
   {
@@ -47,7 +47,7 @@ void nb::SlashCommandController::start(dpp::snowflake &guildId)
   }
 }
 
-void nb::SlashCommandController::onCommandCreated(const dpp::confirmation_callback_t &event)
+void ok::SlashCommandController::onCommandCreated(const dpp::confirmation_callback_t &event)
 {
   if (event.is_error())
   {
@@ -60,7 +60,7 @@ void nb::SlashCommandController::onCommandCreated(const dpp::confirmation_callba
   }
 }
 
-void nb::SlashCommandController::onSlashCommand(const dpp::slashcommand_t &event)
+void ok::SlashCommandController::onSlashCommand(const dpp::slashcommand_t &event)
 {
   const auto start = std::chrono::steady_clock::now();
 

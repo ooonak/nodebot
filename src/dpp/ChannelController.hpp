@@ -8,7 +8,7 @@
 #include "dpp/dpp.h"
 #include "spdlog/spdlog.h"
 
-namespace nb
+namespace ok
 {
 
 /**
@@ -94,4 +94,4 @@ class ChannelController
   static bool channelCreatedAfter(const dpp::channel &channel, const dpp::channel &compareAgainst);
 };
 
-}  // namespace nb
+}  // namespace NodeBot

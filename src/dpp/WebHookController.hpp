@@ -29,4 +29,4 @@ class WebHookController
   void onCreateWebHook(const dpp::confirmation_callback_t &event);
 };
 
-}  // namespace nb
+}  // namespace NodeBot

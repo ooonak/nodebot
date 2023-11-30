@@ -6,7 +6,7 @@ using namespace std::placeholders;
 
 static std::string Needle{"ID: "};
 
-nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot, dpp::snowflake channelId)
+ok::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot, dpp::snowflake channelId)
     : mBot{bot}, mChannelId{channelId}, mLogger{spdlog::get("DPP")}
 {
   if (mLogger == nullptr)
@@ -22,7 +22,7 @@ nb::NodeController::NodeController(std::shared_ptr<dpp::cluster> bot, dpp::snowf
   mBot->on_message_update(std::bind(&NodeController::onMessageUpdate, this, _1));
 }
 
-void nb::NodeController::update(dpp::snowflake channelId, const nb::NodeHandlesT &nodes)
+void ok::NodeController::update(dpp::snowflake channelId, const ok::NodeHandlesT &nodes)
 {
   for (const auto &node : nodes)
   {
@@ -65,7 +65,7 @@ void nb::NodeController::update(dpp::snowflake channelId, const nb::NodeHandlesT
   }
 }
 
-void nb::NodeController::onThreadsList(const dpp::confirmation_callback_t &event)
+void ok::NodeController::onThreadsList(const dpp::confirmation_callback_t &event)
 {
   if (event.is_error())
   {
@@ -88,7 +88,7 @@ void nb::NodeController::onThreadsList(const dpp::confirmation_callback_t &event
   mReady = true;
 }
 
-void nb::NodeController::onMessageCreate(const dpp::message_create_t &event)
+void ok::NodeController::onMessageCreate(const dpp::message_create_t &event)
 {
   const uint64_t id = idFromMessage(event.msg);
   if (id != 0 && mNodes.find(id) != mNodes.end())
@@ -104,7 +104,7 @@ void nb::NodeController::onMessageCreate(const dpp::message_create_t &event)
   }
 }
 
-void nb::NodeController::onThreadCreate(const dpp::confirmation_callback_t &event)
+void ok::NodeController::onThreadCreate(const dpp::confirmation_callback_t &event)
 {
   if (event.is_error())
   {
@@ -127,7 +127,7 @@ void nb::NodeController::onThreadCreate(const dpp::confirmation_callback_t &even
   }
 }
 
-void nb::NodeController::onMessageUpdate(const dpp::message_update_t &event)
+void ok::NodeController::onMessageUpdate(const dpp::message_update_t &event)
 {
   const uint64_t id = idFromMessage(event.msg);
   if (id != 0 && mNodes.find(id) != mNodes.end())
@@ -137,7 +137,7 @@ void nb::NodeController::onMessageUpdate(const dpp::message_update_t &event)
   }
 }
 
-std::string nb::NodeController::ISO8601UTC(
+std::string ok::NodeController::ISO8601UTC(
     const std::chrono::system_clock::time_point &tp)
 {
   const auto then = std::chrono::system_clock::to_time_t(tp);
@@ -146,7 +146,7 @@ std::string nb::NodeController::ISO8601UTC(
   return ss.str();
 }
 
-uint64_t nb::NodeController::idFromMessage(const dpp::message &msg) const
+uint64_t ok::NodeController::idFromMessage(const dpp::message &msg) const
 {
   uint64_t id = 0;
 
@@ -173,7 +173,7 @@ uint64_t nb::NodeController::idFromMessage(const dpp::message &msg) const
   return id;
 }
 
-dpp::snowflake nb::NodeController::threadId(uint64_t id)
+dpp::snowflake ok::NodeController::threadId(uint64_t id)
 {
   if (mNodes.find(id) != mNodes.end() && mNodes[id].thread != nullptr)
   {
@@ -183,6 +183,6 @@ dpp::snowflake nb::NodeController::threadId(uint64_t id)
   return dpp::snowflake{};
 }
 
-bool nb::NodeController::ready() const { return mReady; }
+bool ok::NodeController::ready() const { return mReady; }
 
-bool nb::NodeController::errorOccured() const { return mErrorOccured; }
+bool ok::NodeController::errorOccured() const { return mErrorOccured; }

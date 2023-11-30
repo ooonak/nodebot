@@ -7,7 +7,7 @@
 
 using namespace std::placeholders;
 
-nb::ChannelController::ChannelController(std::shared_ptr<dpp::cluster> bot,
+ok::ChannelController::ChannelController(std::shared_ptr<dpp::cluster> bot,
                                          std::string realm,
                                          std::string subRealm,
                                          int channelLifetimeInHours,
@@ -24,13 +24,13 @@ nb::ChannelController::ChannelController(std::shared_ptr<dpp::cluster> bot,
   }
 }
 
-void nb::ChannelController::start(dpp::snowflake guildId)
+void ok::ChannelController::start(dpp::snowflake guildId)
 {
   mGuildId = guildId;
   mBot->channels_get(mGuildId, std::bind(&ChannelController::onCategorysGet, this, _1));
 }
 
-bool nb::ChannelController::ready(dpp::snowflake &id) const
+bool ok::ChannelController::ready(dpp::snowflake &id) const
 {
   if (mReady == true && mChannel != nullptr)
   {
@@ -43,9 +43,9 @@ bool nb::ChannelController::ready(dpp::snowflake &id) const
   }
 }
 
-bool nb::ChannelController::errorOccured() const { return mErrorOccured; }
+bool ok::ChannelController::errorOccured() const { return mErrorOccured; }
 
-void nb::ChannelController::onCategorysGet(const dpp::confirmation_callback_t &event)
+void ok::ChannelController::onCategorysGet(const dpp::confirmation_callback_t &event)
 {
   if (event.is_error())
   {
@@ -78,7 +78,7 @@ void nb::ChannelController::onCategorysGet(const dpp::confirmation_callback_t &e
   }
 }
 
-void nb::ChannelController::onChannelsGet(const dpp::confirmation_callback_t &event)
+void ok::ChannelController::onChannelsGet(const dpp::confirmation_callback_t &event)
 {
   if (event.is_error())
   {
@@ -160,7 +160,7 @@ void nb::ChannelController::onChannelsGet(const dpp::confirmation_callback_t &ev
   }
 }
 
-void nb::ChannelController::onCategoryCreate(const dpp::confirmation_callback_t &event)
+void ok::ChannelController::onCategoryCreate(const dpp::confirmation_callback_t &event)
 {
   if (event.is_error())
   {
@@ -176,7 +176,7 @@ void nb::ChannelController::onCategoryCreate(const dpp::confirmation_callback_t 
   }
 }
 
-void nb::ChannelController::onChannelCreate(
+void ok::ChannelController::onChannelCreate(
     const dpp::confirmation_callback_t &event)
 {
   if (event.is_error())
@@ -197,7 +197,7 @@ void nb::ChannelController::onChannelCreate(
   }
 }
 
-void nb::ChannelController::onChannelDelete(const dpp::confirmation_callback_t &event)
+void ok::ChannelController::onChannelDelete(const dpp::confirmation_callback_t &event)
 {
   if (event.is_error())
   {
@@ -217,7 +217,7 @@ void nb::ChannelController::onChannelDelete(const dpp::confirmation_callback_t &
   }
 }
 
-std::string nb::ChannelController::ISO8601UTC(dpp::snowflake id)
+std::string ok::ChannelController::ISO8601UTC(dpp::snowflake id)
 {
   const auto now = std::chrono::system_clock::now();
   const auto then = std::chrono::system_clock::to_time_t(now - std::chrono::milliseconds((id >> 22) + 1420070400000));
@@ -226,7 +226,7 @@ std::string nb::ChannelController::ISO8601UTC(dpp::snowflake id)
   return ss.str();
 }
 
-bool nb::ChannelController::channelOlderThan(const dpp::channel &channel, int channelLifetimeInHours)
+bool ok::ChannelController::channelOlderThan(const dpp::channel &channel, int channelLifetimeInHours)
 {
   const auto now = dpp::utility::uptime(dpp::utility::time_f());
   const auto created = dpp::utility::uptime(channel.get_creation_time());
@@ -244,7 +244,7 @@ bool nb::ChannelController::channelOlderThan(const dpp::channel &channel, int ch
   }
 }
 
-bool nb::ChannelController::channelCreatedAfter(const dpp::channel &channel, const dpp::channel &compareAgainst)
+bool ok::ChannelController::channelCreatedAfter(const dpp::channel &channel, const dpp::channel &compareAgainst)
 {
   const auto channelCreated = dpp::utility::uptime(channel.get_creation_time());
   const auto compareAgainstCreated = dpp::utility::uptime(compareAgainst.get_creation_time());

@@ -6,8 +6,8 @@
 
 using namespace std::placeholders;
 
-nb::DppController::DppController(const nb::Config &config,
-                                 std::shared_ptr<nb::NodeQueues> nodeQueues, const std::shared_ptr<spdlog::logger>& logger)
+ok::DppController::DppController(const ok::Config &config,
+                                 std::shared_ptr<ok::NodeQueues> nodeQueues, const std::shared_ptr<spdlog::logger>& logger)
     : mConfig{config}, mLogger{logger}, mNodeQueues{nodeQueues}
 {
   if (mLogger == nullptr)
@@ -49,13 +49,13 @@ nb::DppController::DppController(const nb::Config &config,
       [this](const dpp::ready_t event)
       {
         mBot->current_user_get_guilds(
-            std::bind(&nb::DppController::onGetGuilds, this, _1));
+            std::bind(&ok::DppController::onGetGuilds, this, _1));
       });
 }
 
-nb::DppController::~DppController() { mLogger->debug(__func__); }
+ok::DppController::~DppController() { mLogger->debug(__func__); }
 
-void nb::DppController::onGetGuilds(const dpp::confirmation_callback_t &event)
+void ok::DppController::onGetGuilds(const dpp::confirmation_callback_t &event)
 {
   if (event.is_error())
   {
@@ -70,12 +70,12 @@ void nb::DppController::onGetGuilds(const dpp::confirmation_callback_t &event)
       mGuild = std::make_unique<dpp::guild>(value);
       mLogger->info("I'm a Discord bot named '{}' ({}) connected to guild '{}' ({})", mBot->me.username, mBot->me.id, mGuild->name, mGuild->id);
 
-      mBot->start_timer(std::bind(&nb::DppController::onTimerTick, this), mConfig.updateFrequencySeconds);
+      mBot->start_timer(std::bind(&ok::DppController::onTimerTick, this), mConfig.updateFrequencySeconds);
     }
   }
 }
 
-void nb::DppController::onTimerTick()
+void ok::DppController::onTimerTick()
 {
   if (mStop == true)
   {
@@ -87,7 +87,7 @@ void nb::DppController::onTimerTick()
   switch (mState)
   {
     case State::Init:
-      mChannelController = std::make_unique<nb::ChannelController>(
+      mChannelController = std::make_unique<ok::ChannelController>(
           mBot, mConfig.realm, mConfig.subRealm, mConfig.channelLifetimeInHours, mLogger);
       if (mChannelController != nullptr)
       {
@@ -103,7 +103,7 @@ void nb::DppController::onTimerTick()
     case State::WaitingForChannels:
       if (mChannelController->ready(mChannelId))
       {
-        mNodeController = std::make_unique<nb::NodeController>(mBot, mChannelId);
+        mNodeController = std::make_unique<ok::NodeController>(mBot, mChannelId);
         mState = State::WaitingForThreads;
       }
       else if (mChannelController->errorOccured())
@@ -117,8 +117,8 @@ void nb::DppController::onTimerTick()
       {
         if (mNodeController->ready())
         {
-          // TODO mSlashCommandController = std::make_unique<nb::SlashCommandController>(mBot, mNodes, mLogger);
-          mBot->start_timer(std::bind(&nb::DppController::onMessageTimerTick, this), 1);
+          // TODO mSlashCommandController = std::make_unique<NodeBot::SlashCommandController>(mBot, mNodes, mLogger);
+          mBot->start_timer(std::bind(&ok::DppController::onMessageTimerTick, this), 1);
           mState = State::Ready;
         }
         else if (mNodeController->errorOccured())
@@ -150,7 +150,7 @@ void nb::DppController::onTimerTick()
   }
 }
 
-void nb::DppController::onMessageTimerTick()
+void ok::DppController::onMessageTimerTick()
 {
   dpp::snowflake channelId{0};
   if (mChannelController->ready(channelId))
@@ -173,7 +173,7 @@ void nb::DppController::onMessageTimerTick()
   }
 }
 
-void nb::DppController::start()
+void ok::DppController::start()
 {
   if (mBot != nullptr)
   {
@@ -182,4 +182,4 @@ void nb::DppController::start()
   }
 }
 
-void nb::DppController::stop() { mStop = true; }
+void ok::DppController::stop() { mStop = true; }

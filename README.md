@@ -1,9 +1,20 @@
 # nodebot
-## Build
+### Build, test & run
 ```bash
-$ mkdir build; cd build
-$ cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++ ..
-$ cmake --build .
+$ cmake -S . -B build -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_INSTALL_PREFIX=$HOME/usr/local
+$ cmake --build build
+$ ctest --test-dir build
+
+# Or access artifacts directly
+$ ./build/tests/NodeBot 
+$ ./build/example/NodeBot
+
+# Install
+$ cmake --install build
+
+# Pack
+$ cd build; cpack -G TGZ 
 ```
 
 ## Get token and create configuration

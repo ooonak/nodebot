@@ -8,7 +8,7 @@
 #include "dpp/dpp.h"
 #include "spdlog/spdlog.h"
 
-namespace nb
+namespace ok
 {
 
 class NodeController
@@ -21,7 +21,7 @@ class NodeController
 
   bool errorOccured() const;
 
-  void update(dpp::snowflake channelId, const nb::NodeHandlesT &nodes);
+  void update(dpp::snowflake channelId, const ok::NodeHandlesT &nodes);
 
   dpp::snowflake threadId(uint64_t id);
 
@@ -60,4 +60,4 @@ class NodeController
   uint64_t idFromMessage(const dpp::message &msg) const;
 };
 
-}  // namespace nb
+}  // namespace NodeBot

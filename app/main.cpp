@@ -82,8 +82,8 @@ int main()
       std::cerr << "Could not register command" << std::endl;
     }
 
-    bot.sendMessage(handle1, "A test message :smile:");
-    bot.sendMessage(handle2, "Another test message :smile:");
+    bot.sendMessage(handle1, "A tests message :smile:");
+    bot.sendMessage(handle2, "Another tests message :smile:");
 
     std::this_thread::sleep_for(std::chrono::seconds(120));
     bot.stop();

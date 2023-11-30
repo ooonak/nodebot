@@ -8,7 +8,7 @@
 #include "DataTypes.hpp"
 #include "spdlog/spdlog.h"
 
-namespace nb
+namespace ok
 {
 
 class NodeBotImpl;
@@ -71,4 +71,4 @@ class NodeBot
   std::unique_ptr<NodeBotImpl> mImpl;
 };
 
-}  // namespace nb
+}  // namespace ok
