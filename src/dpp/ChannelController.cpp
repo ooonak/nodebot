@@ -1,5 +1,4 @@
 #include "ChannelController.hpp"
-
 #include <chrono>
 #include <iomanip>
 #include <sstream>
@@ -145,15 +144,15 @@ void ok::ChannelController::onChannelsGet(const dpp::confirmation_callback_t &ev
         newChannel.set_parent_id(mCategory->id);
         newChannel.set_type(dpp::channel_type::CHANNEL_TEXT);
 
-        mBot->channel_create(newChannel, std::bind(&ChannelController::onChannelCreate, this, _1));
+        mBot->channel_create(newChannel, [this](auto && PH1) { onChannelCreate(std::forward<decltype(PH1)>(PH1)); });
       }
 
       if (!mExpiredChannelsToDelete.empty())
       {
-        for (const auto channel : mExpiredChannelsToDelete)
+        for (const auto& channel : mExpiredChannelsToDelete)
         {
           mLogger->debug("About to delete channel {}, id: {}", channel.name, channel.id);
-          mBot->channel_delete(channel.id, std::bind(&ChannelController::onChannelDelete, this, _1));
+          mBot->channel_delete(channel.id, [this](auto && PH1) { onChannelDelete(std::forward<decltype(PH1)>(PH1)); });
         }
       }
     }
@@ -232,7 +231,7 @@ bool ok::ChannelController::channelOlderThan(const dpp::channel &channel, int ch
   const auto created = dpp::utility::uptime(channel.get_creation_time());
   const auto delta = now.to_secs() - created.to_secs();
 
-  if (delta > channelLifetimeInHours * 3600)
+  if (delta > static_cast<unsigned>(channelLifetimeInHours * 3600))
   {
     mLogger->info("Channel {}, id: {}, created: {}, more than {} hours old ({} seconds).",
         channel.name, channel.id, ISO8601UTC(channel.id), channelLifetimeInHours, delta);
@@ -248,6 +247,5 @@ bool ok::ChannelController::channelCreatedAfter(const dpp::channel &channel, con
 {
   const auto channelCreated = dpp::utility::uptime(channel.get_creation_time());
   const auto compareAgainstCreated = dpp::utility::uptime(compareAgainst.get_creation_time());
-  const auto delta = channelCreated.to_secs() - compareAgainstCreated.to_secs();
-  return (delta < 0);
+  return channelCreated.to_secs() < compareAgainstCreated.to_secs();
 }

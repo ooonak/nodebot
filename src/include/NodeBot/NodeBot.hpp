@@ -4,7 +4,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-
 #include "DataTypes.hpp"
 #include "spdlog/spdlog.h"
 

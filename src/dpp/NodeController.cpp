@@ -152,7 +152,7 @@ uint64_t ok::NodeController::idFromMessage(const dpp::message &msg) const
 
   try
   {
-    for (const auto embed : msg.embeds)
+    for (const auto &embed : msg.embeds)
     {
       if (const auto footer = embed.footer)
       {

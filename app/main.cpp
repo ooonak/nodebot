@@ -1,11 +1,9 @@
 #include <cstdlib>
-#include <functional>
 #include <iostream>
 #include <memory>
 #include <thread>
 #include <vector>
-
-#include "nb/NodeBot.hpp"
+#include "NodeBot/NodeBot.hpp"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 
@@ -34,12 +32,12 @@ int main()
     std::vector<spdlog::sink_ptr> sinks;
     setupLogging(sinks);
 
-    nb::NodeBot bot("/tmp/nodebot.conf", spdlog::get("DiscordBot"));
+    ok::NodeBot bot("/tmp/nodebot.conf", spdlog::get("DiscordBot"));
     auto t1 = std::thread([&bot]() { bot.start(); });
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
-    nb::NodeInfo info{};
+    ok::NodeInfo info{};
     info.name = "X-Wing #1";
     info.description = "Rebel T-65B Red Squadron.";
     info.details.push_back({"Direction", "To infinity"});

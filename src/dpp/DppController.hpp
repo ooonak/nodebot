@@ -2,7 +2,6 @@
 
 #include <atomic>
 #include <memory>
-
 #include "ChannelController.hpp"
 #include "Config.hpp"
 #include "NodeController.hpp"

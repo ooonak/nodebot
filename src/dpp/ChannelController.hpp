@@ -4,7 +4,6 @@
 #include <mutex>
 #include <string>
 #include <vector>
-
 #include "dpp/dpp.h"
 #include "spdlog/spdlog.h"
 

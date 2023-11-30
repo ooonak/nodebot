@@ -25,6 +25,7 @@ include(GNUInstallDirs)
 include(InstallRequiredSystemLibraries)
 include(CMakePackageConfigHelpers)
 
+find_package(Threads REQUIRED)
 find_package(spdlog REQUIRED)
 
 # define library
@@ -52,7 +53,13 @@ target_link_libraries(${PROJECT_NAME}
     spdlog::spdlog
     toml11::toml11
     nlohmann_json::nlohmann_json
-    dpp
+    DPP
+)
+
+target_include_directories(
+    ${PROJECT_NAME}
+    PUBLIC
+    ${DPP_INCLUDE_DIR}
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
@@ -60,7 +67,7 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 # add compiler warning flags just when building this project via the BUILD_INTERFACE
 set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU,LCC>")
 target_compile_options(${PROJECT_NAME} PUBLIC
-        "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wpedantic;-Werror;-Wshadow;-Wformat=2;-Wunused>>"
+        "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wpedantic;-Werror;-Wformat=2;-Wunused;-Wno-redundant-move>>"
 )
 
 # state that the library need PIC when the default is shared libraries
@@ -70,18 +77,9 @@ target_include_directories(${PROJECT_NAME}
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
         $<INSTALL_INTERFACE:include>
 )
-
-#target_include_directories(${PROJECT_NAME}
-#        PUBLIC
-#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-#        $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
-#        $<INSTALL_INTERFACE:include>
-#        ${spdlog_SOURCE_DIR}/include
-#        ${toml_SOURCE_DIR}
-#)
 
 add_library(${NAMESPACE}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 

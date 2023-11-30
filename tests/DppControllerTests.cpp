@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "dpp/Controller.hpp"
+#include "dpp/DppController.hpp"
 
 TEST(Controller, Dummy)
 {

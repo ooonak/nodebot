@@ -46,7 +46,7 @@ ok::DppController::DppController(const ok::Config &config,
       });
 
   mBot->on_ready(
-      [this](const dpp::ready_t event)
+      [this](const dpp::ready_t /*event*/)
       {
         mBot->current_user_get_guilds(
             std::bind(&ok::DppController::onGetGuilds, this, _1));

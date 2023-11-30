@@ -98,7 +98,11 @@ void ok::SlashCommandController::onSlashCommand(const dpp::slashcommand_t &event
     const auto id = std::get<int64_t>(event.get_parameter("id"));
     const auto cmdName = std::get<std::string>(event.get_parameter("cmd"));
 
-    auto itVec = std::find_if(mNodes.begin(), mNodes.end(), [&](const auto &node) { return node.id == id; });
+    auto itVec = std::find_if(mNodes.begin(), mNodes.end(), [&](const auto &node)
+      {
+        return node.id == static_cast<uint64_t>(id);
+      });
+
     if (itVec != mNodes.end())
     {
       auto itUMap = (*itVec).commandCallbacks.find(cmdName);

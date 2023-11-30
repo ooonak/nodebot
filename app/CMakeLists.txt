@@ -18,4 +18,5 @@ set_target_properties(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
         ok::NodeBot
+        spdlog::spdlog
 )

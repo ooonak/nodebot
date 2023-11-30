@@ -11,12 +11,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 option(BUILD_TESTING "Build tests" ON)
-option(TRY_FETCH_CONTENT_AFTER_FIND_PACKAGE "If dependencies could not be found by find_package(), try FetchContent" ON)
 
-if (TRY_FETCH_CONTENT_AFTER_FIND_PACKAGE)
-    include(dependencies.cmake)
-    EnableUseFetchContent()
-endif()
+include(dependencies.cmake)
+EnableUseFetchContent()
 
 add_subdirectory(src)
 add_subdirectory(app)
