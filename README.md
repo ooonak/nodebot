@@ -1,5 +1,6 @@
 # nodebot
-### Build, test & run
+## Build, test & run
+### Only Fetch_Content
 ```bash
 $ cmake -S . -B build -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug \
   -DCMAKE_INSTALL_PREFIX=$HOME/usr/local
@@ -15,6 +16,19 @@ $ cmake --install build
 
 # Pack
 $ cd build; cpack -G TGZ 
+```
+
+### With Conan
+```bash 
+$ conan profile detect --force
+
+$ conan install .  --profile default --output-folder=build --build=missing
+$ cmake -B build -G Ninja --preset conan-release
+$ cmake --build build
+
+# Same without presets
+cmake -S. -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=./build/build/Release/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build build
 ```
 
 ## Get token and create configuration

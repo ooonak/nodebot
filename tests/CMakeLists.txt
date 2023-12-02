@@ -24,8 +24,6 @@ target_link_libraries(${PROJECT_NAME}
         GTest::gtest_main
 )
 
-message(STATUS "x ${toml_SOURCE_DIR}")
-
 target_include_directories(
         ${PROJECT_NAME}
         PRIVATE

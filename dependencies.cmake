@@ -18,7 +18,7 @@ macro(EnableUseFetchContent)
     unset(DPP_BUILD_TEST)
     unset(BUILD_VOICE_SUPPORT)
 
-   #[[ FetchContent_Declare(
+   FetchContent_Declare(
         spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
         GIT_TAG v1.12.0
@@ -43,11 +43,11 @@ macro(EnableUseFetchContent)
     )
 
     FetchContent_Declare(
-            mosquitto
-            GIT_REPOSITORY https://github.com/eclipse/mosquitto.git
-            GIT_TAG v2.0.18
+      mosquitto
+      GIT_REPOSITORY https://github.com/eclipse/mosquitto.git
+      GIT_TAG v2.0.18
     )
 
-    FetchContent_MakeAvailable(spdlog toml json googletest mosquitto)]]
+    FetchContent_MakeAvailable(spdlog toml json googletest mosquitto)
 
 endmacro(EnableUseFetchContent)
