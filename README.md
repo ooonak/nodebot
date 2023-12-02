@@ -22,14 +22,17 @@ $ cd build; cpack -G TGZ
 ```bash 
 $ conan profile detect --force
 
-$ conan install .  --profile default --output-folder=build --build=missing
-$ cmake -B build -G Ninja --preset conan-release
+$ conan install .  --profile default --output-folder=build --build=missing --settings=build_type=<Release/Debug>
+$ cmake -B build -G Ninja --preset conan-<Release/Debug>
 $ cmake --build build
 
 # Same without presets
-cmake -S. -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=./build/build/Release/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake -S. -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=./build/build/Release/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=<Release/Debug>
 cmake --build build
 ```
+
+If CLion Enable conan preset profile under Settings -> Build, Execution, Deployment -> CMake.
+Then select the "conan-<release/debug>" build profile.
 
 ## Get token and create configuration
 https://discord.com/api/oauth2/authorize?client_id=<client-id>&permissions=<permissions>&scope=bot%20applications.commands
