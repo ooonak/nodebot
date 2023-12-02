@@ -8,6 +8,17 @@ macro(EnableUseFetchContent)
     set(DPP_BUILD_TEST OFF)
 
     FetchContent_Declare(
+            DPP
+            GIT_REPOSITORY https://github.com/brainboxdotcc/DPP.git
+            GIT_TAG v10.0.28
+    )
+
+    FetchContent_MakeAvailable(DPP)
+
+    unset(DPP_BUILD_TEST)
+    unset(BUILD_VOICE_SUPPORT)
+
+   #[[ FetchContent_Declare(
         spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
         GIT_TAG v1.12.0
@@ -26,20 +37,17 @@ macro(EnableUseFetchContent)
     )
 
     FetchContent_Declare(
-      DPP
-      GIT_REPOSITORY https://github.com/brainboxdotcc/DPP.git
-      GIT_TAG v10.0.28
-    )
-
-    FetchContent_Declare(
       googletest
       GIT_REPOSITORY https://github.com/google/googletest.git
       GIT_TAG v1.14.0
     )
 
-    FetchContent_MakeAvailable(spdlog toml json DPP googletest)
+    FetchContent_Declare(
+            mosquitto
+            GIT_REPOSITORY https://github.com/eclipse/mosquitto.git
+            GIT_TAG v2.0.18
+    )
 
-    unset(DPP_BUILD_TEST)
-    unset(BUILD_VOICE_SUPPORT)
+    FetchContent_MakeAvailable(spdlog toml json googletest mosquitto)]]
 
 endmacro(EnableUseFetchContent)

@@ -27,6 +27,9 @@ include(CMakePackageConfigHelpers)
 
 find_package(Threads REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(toml11 REQUIRED)
+find_package(nlohmann_json REQUIRED)
+find_package(mosquitto REQUIRED)
 
 # define library
 add_library(${PROJECT_NAME}
@@ -53,6 +56,7 @@ target_link_libraries(${PROJECT_NAME}
     spdlog::spdlog
     toml11::toml11
     nlohmann_json::nlohmann_json
+    mosquitto::libmosquittopp
     dpp
 )
 
