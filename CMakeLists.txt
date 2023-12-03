@@ -10,7 +10,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS OFF)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
-option(BUILD_TESTS "Build tests" ON)
+option(TESTING "Build tests" ON)
 
 include(dependencies.cmake)
 EnableUseFetchContent()
@@ -18,7 +18,8 @@ EnableUseFetchContent()
 add_subdirectory(src)
 add_subdirectory(app)
 
-if(BUILD_TESTS)
+if(TESTING)
     include(CTest)
     add_subdirectory(tests)
-endif(BUILD_TESTS)
+endif(TESTING)
+
