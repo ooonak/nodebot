@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "toml11/toml.hpp"
+#include "toml.hpp" // Use toml11/toml.hpp when using Conan.
 
 namespace ok
 {

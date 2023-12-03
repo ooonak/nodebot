@@ -29,7 +29,12 @@ find_package(Threads REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(toml11 REQUIRED)
 find_package(nlohmann_json REQUIRED)
-find_package(mosquitto REQUIRED)
+
+# find_package works for Conan
+#find_package(mosquitto REQUIRED)
+# pkg_check_module works with Nix package
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(Mosquitto IMPORTED_TARGET libmosquittopp REQUIRED)
 
 # define library
 add_library(${PROJECT_NAME}
@@ -37,17 +42,17 @@ add_library(${PROJECT_NAME}
     include/NodeBot/DataTypes.hpp
     Config.hpp
     NodeBot.cpp
-        control/ChannelController.cpp
-        control/ChannelController.hpp
-        control/DppController.cpp
-        control/DppController.hpp
-        control/NodeController.cpp
-        control/NodeController.hpp
-        control/SlashCommandController.cpp
-        control/SlashCommandController.hpp
-        control/NodeQueues.cpp
-        control/NodeQueues.hpp
-        control/InternalDataTypes.hpp
+    control/ChannelController.cpp
+    control/ChannelController.hpp
+    control/DppController.cpp
+    control/DppController.hpp
+    control/NodeController.cpp
+    control/NodeController.hpp
+    control/SlashCommandController.cpp
+    control/SlashCommandController.hpp
+    control/NodeQueues.cpp
+    control/NodeQueues.hpp
+    control/InternalDataTypes.hpp
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -56,7 +61,8 @@ target_link_libraries(${PROJECT_NAME}
     spdlog::spdlog
     toml11::toml11
     nlohmann_json::nlohmann_json
-    mosquitto::libmosquittopp
+    # mosquitto::libmosquittopp # Works with Conan
+    PkgConfig::Mosquitto # Works with Nix
     dpp
 )
 
