@@ -2,6 +2,7 @@
 , stdenv
 , cmake
 , gtest
+, llvmPackages
 , mosquitto
 , ninja
 , nlohmann_json
@@ -27,7 +28,11 @@ stdenv.mkDerivation {
   # Distinguishing between native build inputs (runnable on the host
   # at compile time) and normal build inputs (runnable on target
   # platform at run time) is important for cross compilation.
-  nativeBuildInputs = [ cmake ninja ];
+  nativeBuildInputs = [
+    cmake
+    llvmPackages.clang
+    ninja
+  ];
   buildInputs = [
     mosquitto
     nlohmann_json
