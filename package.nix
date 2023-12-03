@@ -3,6 +3,7 @@
 , cmake
 , gtest
 , llvmPackages
+, mold
 , mosquitto
 , ninja
 , nlohmann_json
@@ -31,6 +32,7 @@ stdenv.mkDerivation {
   nativeBuildInputs = [
     cmake
     llvmPackages.clang
+    mold
     ninja
   ];
   buildInputs = [
