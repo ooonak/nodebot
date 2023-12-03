@@ -35,8 +35,8 @@ class DppController
   std::unique_ptr<dpp::guild> mGuild;
   dpp::snowflake mChannelId;
 
-  dpp::timer mTimer;
-  dpp::timer mMessageTimer;
+  //dpp::timer mTimer;
+  //dpp::timer mMessageTimer;
 
   std::atomic<bool> mStop{false};
 

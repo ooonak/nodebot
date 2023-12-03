@@ -5,6 +5,7 @@
 , mosquitto
 , ninja
 , nlohmann_json
+, openssl
 , spdlog
 , toml11
 , zlib
@@ -19,6 +20,7 @@ stdenv.mkDerivation {
   src = lib.sourceByRegex ./. [
     "^src.*"
     "^tests.*"
+    "dependencies.cmake"
     "CMakeLists.txt"
   ];
 
@@ -29,6 +31,7 @@ stdenv.mkDerivation {
   buildInputs = [
     mosquitto
     nlohmann_json
+    openssl
     spdlog
     toml11
     zlib
