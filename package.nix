@@ -7,6 +7,7 @@
 , nlohmann_json
 , ninja
 , openssl
+, pkg-config
 , spdlog
 , toml11
 , zlib
@@ -38,6 +39,7 @@ stdenv.mkDerivation {
     mosquitto
     nlohmann_json
     openssl
+    pkg-config
     spdlog
     toml11
     zlib

@@ -30,8 +30,6 @@ find_package(spdlog REQUIRED)
 find_package(toml11 REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
-# find_package works for Conan
-#find_package(mosquitto REQUIRED)
 # pkg_check_module works with Nix package
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(Mosquitto IMPORTED_TARGET libmosquittopp REQUIRED)
@@ -61,7 +59,6 @@ target_link_libraries(${PROJECT_NAME}
     spdlog::spdlog
     toml11::toml11
     nlohmann_json::nlohmann_json
-    # mosquitto::libmosquittopp # Works with Conan
     PkgConfig::Mosquitto # Works with Nix
     dpp
 )
