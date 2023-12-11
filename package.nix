@@ -1,12 +1,11 @@
 { lib
 , stdenv
 , cmake
+, clang-tools_16
 , gtest
-, llvmPackages
-, mold
 , mosquitto
-, ninja
 , nlohmann_json
+, ninja
 , openssl
 , spdlog
 , toml11
@@ -15,14 +14,15 @@
 }:
 
 stdenv.mkDerivation {
-  name = "cpp-nix";
+  name = "CppTemplApp";
 
   # good source filtering is important for caching of builds.
   # It's easier when subprojects have their own distinct subfolders.
   src = lib.sourceByRegex ./. [
+    "^app.*"
+    "^cmake.*"
     "^src.*"
     "^tests.*"
-    "dependencies.cmake"
     "CMakeLists.txt"
   ];
 
@@ -31,8 +31,7 @@ stdenv.mkDerivation {
   # platform at run time) is important for cross compilation.
   nativeBuildInputs = [
     cmake
-    llvmPackages.clang
-    mold
+    clang-tools_16
     ninja
   ];
   buildInputs = [
@@ -43,7 +42,9 @@ stdenv.mkDerivation {
     toml11
     zlib
   ];
-  checkInputs = [ gtest ];
+  checkInputs = [
+    gtest
+  ];
 
   doCheck = enableTests;
   cmakeFlags = lib.optional (!enableTests) "-DTESTING=off";
