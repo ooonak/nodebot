@@ -14,11 +14,9 @@
 , enableTests ? true
 }:
 
-stdenv.mkDerivation {
+stdenv.mkDerivation rec {
   name = "NodeBot";
 
-  # good source filtering is important for caching of builds.
-  # It's easier when subprojects have their own distinct subfolders.
   src = lib.sourceByRegex ./. [
     "^app.*"
     "^cmake.*"
@@ -27,9 +25,8 @@ stdenv.mkDerivation {
     "CMakeLists.txt"
   ];
 
-  # Distinguishing between native build inputs (runnable on the host
-  # at compile time) and normal build inputs (runnable on target
-  # platform at run time) is important for cross compilation.
+  # Distinguishing between native build inputs (runnable on the host at compile time)
+  # And normal build inputs (runnable on target platform at run time) is important for cross compilation.
   nativeBuildInputs = [
     cmake
     clang-tools_16
@@ -43,6 +40,7 @@ stdenv.mkDerivation {
     spdlog
     toml11
     zlib
+    DPP
   ];
   checkInputs = [
     gtest
