@@ -1,5 +1,5 @@
 {
-  description = "CppTempl";
+  description = "Nodebot, MQTT to Discord proxy.";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -18,7 +18,7 @@
         gcc = pkgs.callPackage ./package.nix { stdenv = pkgs.gccStdenv; };
 
         dockerImage = pkgs.dockerTools.buildImage {
-          name = "CppTemplAppContainer";
+          name = "Nodebot";
           created = "now";
           tag = builtins.substring 0 9 (self'.rev or "dev");
           copyToRoot = pkgs.buildEnv {
@@ -28,11 +28,11 @@
               #coreutils
               #bash
             ];
-            name = "cpptemplapp-root";
+            name = "nodebot-root";
             pathsToLink = [ "/bin" "/lib" "/include" ];
           };
           config = {
-            Cmd = [ "bin/CppTemplApp" ];
+            Cmd = [ "bin/NodeBotApp" ];
             Env = [
               #"SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
               #"SYSTEM_CERTIFICATE_PATH=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
