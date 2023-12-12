@@ -15,7 +15,7 @@
 }:
 
 stdenv.mkDerivation {
-  name = "CppTemplApp";
+  name = "NodeBot";
 
   # good source filtering is important for caching of builds.
   # It's easier when subprojects have their own distinct subfolders.
