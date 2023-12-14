@@ -20,3 +20,24 @@ target_link_libraries(${PROJECT_NAME}
         ok::NodeBot
         spdlog::spdlog
 )
+
+# installation
+if(NOT APPLE)
+    set(CMAKE_INSTALL_RPATH ${ORIGIN})
+endif()
+
+if(NOT CMAKE_INSTALL_BINDIR)
+    set(CMAKE_INSTALL_BINDIR "bin")
+endif()
+if(NOT CMAKE_INSTALL_LIBDIR)
+    set(CMAKE_INSTALL_LIBDIR "lib")
+endif()
+if(NOT CMAKE_INSTALL_INCLUDEDIR)
+    set(CMAKE_INSTALL_INCLUDEDIR "include")
+endif()
+
+install(TARGETS ${PROJECT_NAME}
+        EXPORT ${CMAKE_PROJECT_NAME}Targets
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)

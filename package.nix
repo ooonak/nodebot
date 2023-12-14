@@ -1,4 +1,5 @@
-{ lib
+{ pkgs ? import <nixpkgs> {}
+, lib
 , stdenv
 , cmake
 , clang-tools_16
@@ -15,7 +16,7 @@
 }:
 
 stdenv.mkDerivation rec {
-  name = "NodeBot";
+  name = "NodeBotApp";
 
   src = lib.sourceByRegex ./. [
     "^app.*"
@@ -40,7 +41,7 @@ stdenv.mkDerivation rec {
     spdlog
     toml11
     zlib
-    DPP
+    (pkgs.callPackage ./dependencies/DPP.nix {})
   ];
   checkInputs = [
     gtest
