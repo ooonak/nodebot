@@ -31,13 +31,13 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     cmake
     clang-tools_16
+    pkg-config
     ninja
   ];
   buildInputs = [
     mosquitto
     nlohmann_json
     openssl
-    pkg-config
     spdlog
     toml11
     zlib
