@@ -4,7 +4,8 @@
   outputs = { self, nixpkgs }:
 
     let
-      supportedSystems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
+      #supportedSystems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
+      supportedSystems = [ "x86_64-linux" ];
 
       forAllSystems = func: nixpkgs.lib.genAttrs supportedSystems
         (system: func nixpkgs.legacyPackages.${system});
@@ -27,6 +28,7 @@
               dockerTools.caCertificates
               # How to refer to packages.default here?
               # Is not in scope NodeBotApp
+              self.packages
             ];
             pathsToLink = [ "/etc" "/var" "/bin" "/lib" "/include" ];
           };
