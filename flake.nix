@@ -28,11 +28,12 @@
               dockerTools.caCertificates
               # How to refer to packages.default here?
               # Is not in scope NodeBotApp
-              self.packages
+              NodeBotApp.buildInputs
             ];
             pathsToLink = [ "/etc" "/var" "/bin" "/lib" "/include" ];
           };
           config = {
+            User = "nobody";
             Cmd = [ "bin/NodeBotApp" ];
             Env = [ ];
           };

@@ -246,3 +246,5 @@ CMakeUserPresets.json
 
 nodebot.conf
 result
+.direnv
+.vscode
