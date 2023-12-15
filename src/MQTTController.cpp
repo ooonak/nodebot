@@ -6,8 +6,10 @@ ok::MQTTController::MQTTController(const std::shared_ptr<spdlog::logger> &logger
  : logger_{logger}
  {
     if (logger_ == nullptr)
+    {
         throw std::runtime_error("No logger (nullptr)");
-
+    }
+    
     int major = 0;
     int minor = 0;
     int revision = 0;
@@ -20,4 +22,12 @@ ok::MQTTController::MQTTController(const std::shared_ptr<spdlog::logger> &logger
 ok::MQTTController::~MQTTController()
 {
     mosqpp::lib_cleanup();
+}
+
+void ok::MQTTController::operator()(ok::NodeActions *actions)
+{
+    if (actions != nullptr)
+    {
+        actions_ = actions;
+    }
 }

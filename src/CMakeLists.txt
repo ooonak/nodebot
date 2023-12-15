@@ -52,6 +52,7 @@ add_library(${PROJECT_NAME}
     control/NodeQueues.hpp
     control/InternalDataTypes.hpp
     MQTTController.cpp
+    MQTTClient.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

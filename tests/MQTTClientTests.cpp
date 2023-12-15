@@ -1,9 +1,9 @@
 #include "gtest/gtest.h"
-#include "MQTTController.hpp"
+#include "MQTTClient.hpp"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 
-TEST(MQTTController, ThrowIfNoLogger)
+TEST(MQTTClient, ThrowIfNoLogger)
 {
   if (spdlog::get("TestLogger") == nullptr)
   {
@@ -12,7 +12,7 @@ TEST(MQTTController, ThrowIfNoLogger)
     spdlog::register_logger(logger);
   }
 
-  EXPECT_ANY_THROW(ok::MQTTController(nullptr));
+  EXPECT_ANY_THROW(ok::MQTTClient(nullptr));
 
-  EXPECT_NO_THROW(ok::MQTTController(spdlog::get("TestLogger")));
+  EXPECT_NO_THROW(ok::MQTTClient(spdlog::get("TestLogger")));
 }

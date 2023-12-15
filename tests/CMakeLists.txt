@@ -11,6 +11,7 @@ find_package(toml11 REQUIRED)
 
 add_executable(${PROJECT_NAME}
         MQTTControllerTests.cpp
+        MQTTClientTests.cpp
         control/DppControllerTests.cpp
         control/NodeQueuesTests.cpp
 )

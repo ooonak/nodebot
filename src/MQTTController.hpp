@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include "spdlog/spdlog.h"
+#include "MQTTClient.hpp"
 
 namespace ok {
 
@@ -13,8 +14,12 @@ public:
 
     ~MQTTController();
 
+    void operator()(ok::NodeActions *actions);
+
 private:
     std::shared_ptr<spdlog::logger> logger_;
+    ok::NodeActions *actions_{nullptr};
+    std::unique_ptr<ok::MQTTClient> client_;
 };
 
 } // namespace ok
