@@ -17,7 +17,7 @@
         clang = pkgs.callPackage ./package.nix { stdenv = pkgs.clang16Stdenv; };
         gcc = pkgs.callPackage ./package.nix { stdenv = pkgs.gccStdenv; };
 
-      dockerImage = pkgs.dockerTools.buildImage rec {
+        dockerImage = pkgs.dockerTools.buildImage rec {
           name = "NodeBot";
           created = "now";
           tag = "latest";
