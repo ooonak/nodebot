@@ -58,10 +58,9 @@ void ok::MQTTClient::on_message(const struct mosquitto_message * message)
 {
     if (ingressQueue_ != nullptr)
     {
-        if (auto msg = parse(message->topic))
+        if (auto msg = parse(message->topic, logger_))
         {
-            (*msg).jsonPayload = std::string(reinterpret_cast<const char*>(message->payload), message->payloadlen);
-          //logger_->debug("Received MQTT message: node id: {}, type: {}, group: {}, subgroup: {}, payload: {}", std::get<0>(*info), std::get<2>(*info), payload);
+          (*msg).jsonPayload = std::string(reinterpret_cast<const char*>(message->payload), message->payloadlen);
           ingressQueue_->push(*msg);
         }
     }
@@ -69,20 +68,20 @@ void ok::MQTTClient::on_message(const struct mosquitto_message * message)
 
 void ok::MQTTClient::on_subscribe(int /*mid*/, int /*qos_count*/, const int * /*granted_qos*/)
 {
-    logger_->info("Subscribed");
+    logger_->debug("Subscribed");
 }
 	
 void ok::MQTTClient::on_unsubscribe(int /*mid*/)
 {
-    logger_->info("Unsubscribed");
+    logger_->debug("Unsubscribed");
 }
 
-bool ok::MQTTClient::containsNonAlpha(const std::string& str) const
+bool ok::MQTTClient::containsNonAlpha(const std::string& str)
 {
     return str.find_last_not_of("abcdefghijklmnopqrstuvwxyz") != std::string::npos;
 }
 
-std::optional<ok::IngressMessage> ok::MQTTClient::parse(const std::string& topic) const
+std::optional<ok::IngressMessage> ok::MQTTClient::parse(const std::string& topic, const std::shared_ptr<spdlog::logger> &logger)
 {
     try {
         ok::IngressMessage msg{};
@@ -93,13 +92,9 @@ std::optional<ok::IngressMessage> ok::MQTTClient::parse(const std::string& topic
 
         while ((next = topic.find('/', last)) != std::string::npos)
         {
-            if (count == 1)
+            if (count == 2)
             {
                 msg.group = topic.substr(last, next-last);
-            }
-            else if (count == 2)
-            {
-                msg.subGroup = topic.substr(last, next-last);
             }
             else if (count == 3)
             {
@@ -112,14 +107,17 @@ std::optional<ok::IngressMessage> ok::MQTTClient::parse(const std::string& topic
 
         msg.action = ok::fromString(topic.substr(last));
 
-        if (msg.id > 0 && msg.action != ActionT::None && !msg.group.empty() && !msg.subGroup.empty())
+        if (msg.id > 0 && msg.action != ActionT::None && !msg.group.empty())
         {
             return msg;
         }
     }
     catch (const std::exception &exc)
     {
-        logger_->error("{} {}", __func__, exc.what());
+        if (logger != nullptr)
+        {
+            logger->error("{} {}", __func__, exc.what());
+        }
     }
 
     return std::nullopt;

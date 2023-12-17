@@ -12,7 +12,6 @@ struct IngressMessage {
     ActionT action;
     std::uint64_t id;
     std::string group;
-    std::string subGroup;
     std::string jsonPayload;
 };
 

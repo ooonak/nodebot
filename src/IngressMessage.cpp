@@ -41,6 +41,6 @@ std::string ok::toString(ActionT action)
 std::string ok::toString(ok::IngressMessage msg)
 {
     std::ostringstream oss;
-    oss << "id: " << msg.id << ", action: " << toString(msg.action) << ", group: " << msg.group << ", sub-group: " << msg.subGroup << ", payload: " << msg.jsonPayload;
+    oss << "id: " << msg.id << ", action: " << toString(msg.action) << ", group: " << msg.group << ", payload: " << msg.jsonPayload;
     return oss.str();
 }

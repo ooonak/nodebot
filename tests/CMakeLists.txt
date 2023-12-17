@@ -14,8 +14,8 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(Mosquitto IMPORTED_TARGET libmosquittopp REQUIRED)
 
 add_executable(${PROJECT_NAME}
-        #MQTTControllerTests.cpp
-        #MQTTClientTests.cpp
+        MQTTControllerTests.cpp
+        MQTTClientTests.cpp
         control/DppControllerTests.cpp
         control/NodeQueuesTests.cpp
 )

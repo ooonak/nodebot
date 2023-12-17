@@ -18,6 +18,10 @@ public:
 
     ~MQTTClient();
 
+    static bool containsNonAlpha(const std::string& str);
+
+    static std::optional<ok::IngressMessage> parse(const std::string& topic, const std::shared_ptr<spdlog::logger> &logger);
+
 protected:
     void on_connect(int rc) override;
 
@@ -28,10 +32,6 @@ protected:
     void on_subscribe(int mid, int qos_count, const int * granted_qos) override;
 	
     void on_unsubscribe(int mid) override;
-
-    bool containsNonAlpha(const std::string& str) const;
-
-    std::optional<ok::IngressMessage> parse(const std::string& topic) const;
 
 private:
     static constexpr int KEEPALIVESECONDS = 120;
