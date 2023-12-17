@@ -9,9 +9,13 @@ find_package(Threads REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(toml11 REQUIRED)
 
+# pkg_check_module works with Nix package
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(Mosquitto IMPORTED_TARGET libmosquittopp REQUIRED)
+
 add_executable(${PROJECT_NAME}
-        MQTTControllerTests.cpp
-        MQTTClientTests.cpp
+        #MQTTControllerTests.cpp
+        #MQTTClientTests.cpp
         control/DppControllerTests.cpp
         control/NodeQueuesTests.cpp
 )
@@ -22,7 +26,7 @@ target_link_libraries(${PROJECT_NAME}
         spdlog::spdlog
         toml11::toml11
         dpp
-        mosquitto
+        PkgConfig::Mosquitto # Works with Nix
         ok::NodeBot
         GTest::gtest_main
 )

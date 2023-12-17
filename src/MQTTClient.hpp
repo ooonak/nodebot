@@ -1,17 +1,24 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
+#include <vector>
+#include <tuple>
+#include <optional>
 #include "spdlog/spdlog.h"
 #include <mosquittopp.h>
+#include "MQTTConfig.hpp"
+#include "IngressQueue.hpp"
 
 namespace ok {
 
 class MQTTClient : public mosqpp::mosquittopp {
 public:
-    explicit MQTTClient(const std::shared_ptr<spdlog::logger> &logger);
+    explicit MQTTClient(const std::shared_ptr<spdlog::logger> &logger, const ok::MQTTConfig config, IngressQueue* ingressQueue);
 
     ~MQTTClient();
 
+protected:
     void on_connect(int rc) override;
 
     void on_disconnect(int rc) override;
@@ -21,14 +28,18 @@ public:
     void on_subscribe(int mid, int qos_count, const int * granted_qos) override;
 	
     void on_unsubscribe(int mid) override;
-	
-    void on_log(int level, const char * str) override;
-	
-    void on_error() override;
+
+    bool containsNonAlpha(const std::string& str) const;
+
+    std::optional<ok::IngressMessage> parse(const std::string& topic) const;
 
 private:
-    std::shared_ptr<spdlog::logger> logger_;
+    static constexpr int KEEPALIVESECONDS = 120;
 
+    std::shared_ptr<spdlog::logger> logger_{nullptr};
+    const MQTTConfig config_{};
+    std::string topicBase_;
+    IngressQueue* ingressQueue_{nullptr};
 };
 
 } // namespace ok

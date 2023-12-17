@@ -53,6 +53,8 @@ add_library(${PROJECT_NAME}
     control/InternalDataTypes.hpp
     MQTTController.cpp
     MQTTClient.cpp
+    IngressMessage.cpp
+    IngressMessage.hpp
 )
 
 target_link_libraries(${PROJECT_NAME}

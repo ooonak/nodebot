@@ -1,24 +1,23 @@
 #pragma once
 
-#include "NodeActions.hpp"
 #include <memory>
 #include <string>
 #include "spdlog/spdlog.h"
-#include "MQTTClient.hpp"
+#include "MQTTConfig.hpp"
 
 namespace ok {
 
+class MQTTClient;
+class IngressQueue;
+
 class MQTTController {
 public:
-    explicit MQTTController(const std::shared_ptr<spdlog::logger> &logger);
+    explicit MQTTController(const std::shared_ptr<spdlog::logger> &logger, const ok::MQTTConfig config, IngressQueue* ingressQueue);
 
     ~MQTTController();
 
-    void operator()(ok::NodeActions *actions);
-
 private:
     std::shared_ptr<spdlog::logger> logger_;
-    ok::NodeActions *actions_{nullptr};
     std::unique_ptr<ok::MQTTClient> client_;
 };
 

@@ -4,8 +4,21 @@
 #include <thread>
 #include <vector>
 #include "NodeBot/NodeBot.hpp"
+#include "NodeBot/MQTTController.hpp"
+#include "IngressQueue.hpp"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
+
+class IngressQueueTestImpl : public ok::IngressQueue
+{
+public:
+    bool push(ok::IngressMessage msg)
+    {
+        std::cout << __PRETTY_FUNCTION__ << std::endl;
+        std::cout << toString(msg) << std::endl;
+        return true;
+    }
+};
 
 void setupLogging(std::vector<spdlog::sink_ptr> &sinks)
 {
@@ -14,6 +27,10 @@ void setupLogging(std::vector<spdlog::sink_ptr> &sinks)
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     console_sink->set_level(spdlog::level::debug);
     sinks.push_back(console_sink);
+
+    auto mqttLogger = std::make_shared<spdlog::logger>("MQTT", std::begin(sinks), std::end(sinks));
+    mqttLogger->set_level(spdlog::level::debug);
+    spdlog::register_logger(mqttLogger);
 
     auto logger = std::make_shared<spdlog::logger>("DiscordBot", std::begin(sinks), std::end(sinks));
     logger->set_level(spdlog::level::debug);
@@ -32,6 +49,15 @@ int main()
     std::vector<spdlog::sink_ptr> sinks;
     setupLogging(sinks);
 
+    IngressQueueTestImpl * ingressQueue = new IngressQueueTestImpl();
+
+    auto mqtt = ok::MQTTController(spdlog::get("MQTT"), ok::MQTTConfig{"NodeBotClient", "localhost", 1883, "nodebot"}, ingressQueue);
+    while (1)
+    {
+      
+    }
+
+    /*
     ok::NodeBot bot("/tmp/nodebot.conf", spdlog::get("DiscordBot"));
     auto t1 = std::thread([&bot]() { bot.start(); });
 
@@ -87,6 +113,7 @@ int main()
     bot.stop();
     std::this_thread::sleep_for(std::chrono::seconds(5));
     t1.join();
+    */
   }
   catch (const std::exception &exc)
   {
