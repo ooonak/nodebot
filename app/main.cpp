@@ -3,22 +3,13 @@
 #include <memory>
 #include <thread>
 #include <vector>
-#include "NodeBot/NodeBot.hpp"
-#include "NodeBot/MQTTController.hpp"
+
 #include "IngressQueue.hpp"
+#include "NodeBot/IngressQueueThreadsafe.hpp"
+#include "NodeBot/MQTTController.hpp"
+#include "NodeBot/NodeBot.hpp"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
-
-class IngressQueueTestImpl : public ok::IngressQueue
-{
-public:
-    bool push(ok::IngressMessage msg)
-    {
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
-        std::cout << toString(msg) << std::endl;
-        return true;
-    }
-};
 
 void setupLogging(std::vector<spdlog::sink_ptr> &sinks)
 {
@@ -49,12 +40,16 @@ int main()
     std::vector<spdlog::sink_ptr> sinks;
     setupLogging(sinks);
 
-    IngressQueueTestImpl * ingressQueue = new IngressQueueTestImpl();
+    ok::IngressQueueThreadsafe queue;
 
-    auto mqtt = ok::MQTTController(spdlog::get("MQTT"), ok::MQTTConfig{"NodeBotClient", "localhost", 1883, "nodebot"}, ingressQueue);
+    auto mqtt =
+        ok::MQTTController(spdlog::get("MQTT"), ok::MQTTConfig{"NodeBotClient", "localhost", 1883, "nodebot"}, &queue);
+
+    ok::IngressMessage msg{};
     while (1)
     {
-      
+      queue.waitAndPop(msg);
+      spdlog::get("MQTT")->info(toString(msg));
     }
 
     /*

@@ -1,14 +1,14 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
-#include <functional>
 
 namespace ok
 {
 
-using CmdCbT = std::function<void(const std::vector<std::string> & args)>;
+using CmdCbT = std::function<void(const std::vector<std::string>& args)>;
 
 struct NodeInfo
 {
@@ -17,4 +17,4 @@ struct NodeInfo
   std::vector<std::pair<std::string, std::string>> details;
 };
 
-}  // namespace NodeBot
+}  // namespace ok

@@ -1,46 +1,48 @@
 #include "IngressMessage.hpp"
+
 #include <sstream>
 
 ok::ActionT ok::fromString(const std::string &str)
 {
-    if (str == "connect")
-        return ActionT::Connect;
-    else if (str == "disconnect")
-        return ActionT::Disconnect;
-    else if (str == "message")
-        return ActionT::Message;
-    else if (str == "registercommand")
-        return ActionT::RegisterCommand;
-    else if (str == "unregistercommand")
-        return ActionT::UnregisterCommand;
-    else
-        return ActionT::None;
+  if (str == "connect")
+    return ActionT::Connect;
+  else if (str == "disconnect")
+    return ActionT::Disconnect;
+  else if (str == "message")
+    return ActionT::Message;
+  else if (str == "registercommand")
+    return ActionT::RegisterCommand;
+  else if (str == "unregistercommand")
+    return ActionT::UnregisterCommand;
+  else
+    return ActionT::None;
 }
 
 std::string ok::toString(ActionT action)
 {
-    switch (action)
-    {
+  switch (action)
+  {
     case ActionT::Connect:
-        return "connect";
+      return "connect";
     case ActionT::Disconnect:
-        return "disconnect";
+      return "disconnect";
     case ActionT::Message:
-        return "message";
+      return "message";
     case ActionT::RegisterCommand:
-        return "register_command";
+      return "register_command";
     case ActionT::UnregisterCommand:
-        return "unregister_command";
+      return "unregister_command";
     default:
-        return "none";
-    }
+      return "none";
+  }
 
-    return "none";
+  return "none";
 }
 
 std::string ok::toString(ok::IngressMessage msg)
 {
-    std::ostringstream oss;
-    oss << "id: " << msg.id << ", action: " << toString(msg.action) << ", group: " << msg.group << ", payload: " << msg.jsonPayload;
-    return oss.str();
+  std::ostringstream oss;
+  oss << "id: " << msg.id << ", action: " << toString(msg.action) << ", group: " << msg.group
+      << ", payload: " << msg.jsonPayload;
+  return oss.str();
 }

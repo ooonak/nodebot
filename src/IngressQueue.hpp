@@ -1,18 +1,18 @@
 #pragma once
 
-#include <string>
-#include <cstdint>
-#include <vector>
 #include "IngressMessage.hpp"
 
-namespace ok {
+namespace ok
+{
 
-class IngressQueue {
-public:
+class IngressQueue
+{
+ public:
+  virtual ~IngressQueue() = default;
 
-    virtual ~IngressQueue() = default;
+  virtual void push(IngressMessage msg) = 0;
 
-    virtual bool push(IngressMessage msg) = 0;
+  virtual void waitAndPop(IngressMessage &msg) = 0;
 };
 
-} // namespace ok
+}  // namespace ok

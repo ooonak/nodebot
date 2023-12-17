@@ -1,8 +1,9 @@
 #include "NodeBot/NodeBot.hpp"
+
 #include "Config.hpp"
+#include "NodeBotConfig.h"
 #include "control/DppController.hpp"
 #include "control/NodeQueues.hpp"
-#include "NodeBotConfig.h"
 
 class ok::NodeBotImpl
 {

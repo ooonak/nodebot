@@ -55,6 +55,7 @@ add_library(${PROJECT_NAME}
     MQTTClient.cpp
     IngressMessage.cpp
     IngressMessage.hpp
+    utils/ThreadsafeQueue.hpp
 )
 
 target_link_libraries(${PROJECT_NAME}

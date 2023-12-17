@@ -1,8 +1,9 @@
-#include "gtest/gtest.h"
+#include <mosquittopp.h>
+
 #include "MQTTClient.hpp"
+#include "gtest/gtest.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
-#include <mosquittopp.h>
 
 TEST(MQTTClient, ThrowIfNoLogger)
 {
@@ -17,14 +18,16 @@ TEST(MQTTClient, DontThrowIfLogger)
 {
   if (spdlog::get("MQTTClientTests") == nullptr)
   {
-    auto logger = std::make_shared<spdlog::logger>("MQTTClientTests", std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+    auto logger =
+        std::make_shared<spdlog::logger>("MQTTClientTests", std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
     logger->set_level(spdlog::level::debug);
     spdlog::register_logger(logger);
   }
 
   mosqpp::lib_init();
 
-  EXPECT_NO_THROW(ok::MQTTClient(spdlog::get("MQTTClientTests"), ok::MQTTConfig{"NodeBotClient", "localhost", 1883, "nodebot"}, nullptr));
+  EXPECT_NO_THROW(ok::MQTTClient(spdlog::get("MQTTClientTests"),
+                                 ok::MQTTConfig{"NodeBotClient", "localhost", 1883, "nodebot"}, nullptr));
 
   mosqpp::lib_cleanup();
 }

@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "toml.hpp" // Use toml11/toml.hpp when using Conan.
+#include "toml.hpp"  // Use toml11/toml.hpp when using Conan.
 
 namespace ok
 {
@@ -25,7 +25,7 @@ struct Config
   int maxMessagesInQueue;
 };
 
-}  // namespace NodeBot
+}  // namespace ok
 
 TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(ok::Config, token, realm, subRealm, channelLifetimeInHours,
                                        updateFrequencySeconds, maxNodes, maxMessagesInQueue)
