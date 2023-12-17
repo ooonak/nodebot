@@ -4,7 +4,7 @@
 , cmake
 , clang-tools_16
 , gtest
-, mosquitto
+#, mosquitto
 , nlohmann_json
 , ninja
 , openssl
@@ -35,14 +35,14 @@ stdenv.mkDerivation rec {
     ninja
   ];
   buildInputs = [
-    mosquitto
+    #mosquitto
     nlohmann_json
     openssl
     spdlog
     toml11
     zlib
     (pkgs.callPackage ./dependencies/DPP.nix {})
-    #(pkgs.callPackage ./dependencies/mosquitto.nix {})
+    (pkgs.callPackage ./dependencies/mosquitto.nix {})
   ];
   checkInputs = [
     gtest

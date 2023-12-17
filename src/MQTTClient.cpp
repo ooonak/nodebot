@@ -31,7 +31,7 @@ void ok::MQTTClient::on_connect(int rc)
     {
       logger_->info("Connected");
 
-      const std::vector<std::string> actionsStr { "connect", "disconnect", "message", "register_command", "unregister_command" };
+      const std::vector<std::string> actionsStr { "connect", "disconnect", "message", "registercommand", "unregistercommand" };
       for (const auto &str : actionsStr)
       {
           if (!containsNonAlpha(str))

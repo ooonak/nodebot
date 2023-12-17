@@ -13,7 +13,7 @@
     in
     {
       packages = forAllSystems (pkgs: {
-        default = pkgs.callPackage ./package.nix { stdenv = pkgs.clang16Stdenv; };
+        default = pkgs.callPackage ./package.nix { };
         clang = pkgs.callPackage ./package.nix { stdenv = pkgs.clang16Stdenv; };
         gcc = pkgs.callPackage ./package.nix { stdenv = pkgs.gccStdenv; };
 

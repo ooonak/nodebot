@@ -9,9 +9,9 @@ ok::ActionT ok::fromString(const std::string &str)
         return ActionT::Disconnect;
     else if (str == "message")
         return ActionT::Message;
-    else if (str == "register_command")
+    else if (str == "registercommand")
         return ActionT::RegisterCommand;
-    else if (str == "unregister_command")
+    else if (str == "unregistercommand")
         return ActionT::UnregisterCommand;
     else
         return ActionT::None;
