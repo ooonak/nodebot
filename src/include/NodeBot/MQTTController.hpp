@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <string>
-
+#include "MessageQueue.hpp"
 #include "MQTTConfig.hpp"
 #include "spdlog/spdlog.h"
 
@@ -10,7 +10,6 @@ namespace ok
 {
 
 class MQTTClient;
-class MessageQueue;
 
 class MQTTController
 {
@@ -19,6 +18,8 @@ class MQTTController
                           MessageQueue* ingressQueue);
 
   ~MQTTController();
+
+  bool sendMessage(const ok::Message &msg) const;
 
  private:
   std::shared_ptr<spdlog::logger> logger_;

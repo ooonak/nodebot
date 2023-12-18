@@ -50,6 +50,14 @@ int main()
     {
       ingressQueue.waitAndPop(msg);
       spdlog::get("MQTT")->info(toString(msg));
+
+      egressQueue.push(msg);
+      ok::Message tmpMsg{};
+      egressQueue.waitAndPop(&tmpMsg);
+      if (mqtt->sendMessage(tmpMsg))
+      {
+        spdlog::get("MQTT")->info("Published response msg.");
+      }
     }
 
     /*

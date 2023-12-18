@@ -7,7 +7,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
-
+#include <atomic>
 #include "MessageQueue.hpp"
 #include "MQTTConfig.hpp"
 #include "spdlog/spdlog.h"
@@ -21,6 +21,8 @@ class MQTTClient : public mosqpp::mosquittopp
   explicit MQTTClient(const std::shared_ptr<spdlog::logger>& logger, const ok::MQTTConfig config, MessageQueue* ingressQueue);
 
   ~MQTTClient();
+
+  bool sendMessage(const ok::Message &msg);
 
   static bool containsNonAlpha(const std::string& str);
 
@@ -40,7 +42,7 @@ class MQTTClient : public mosqpp::mosquittopp
 
  private:
   static constexpr int KEEPALIVESECONDS = 120;
-
+  std::atomic<bool> connected_{false};
   std::shared_ptr<spdlog::logger> logger_{nullptr};
   const MQTTConfig config_{};
   std::string topicBase_;

@@ -23,10 +23,30 @@ ok::MQTTClient::MQTTClient(const std::shared_ptr<spdlog::logger> &logger, const 
 
 ok::MQTTClient::~MQTTClient() {}
 
+bool ok::MQTTClient::sendMessage(const ok::Message &msg)
+{
+  if (!connected_)
+  {
+    return false;
+  }
+
+  const auto topic = topicBase_ + "/" + std::to_string(msg.id) + "/" + ok::toString(msg.action); 
+  const auto rc = publish(nullptr, topic.c_str(), msg.jsonPayload.length(), msg.jsonPayload.c_str());
+  if (rc != MOSQ_ERR_SUCCESS)
+  {
+    logger_->error("Failed to publish {} {}", rc, strerror(rc));
+    return false;
+  }
+
+  return true;
+}
+
 void ok::MQTTClient::on_connect(int rc)
 {
   if (rc == MOSQ_ERR_SUCCESS)
   {
+    connected_ = true;
+
     logger_->info("Connected");
 
     const std::vector<std::string> actionsStr{"connect", "disconnect", "message", "registercommand",
@@ -48,7 +68,12 @@ void ok::MQTTClient::on_connect(int rc)
   }
 }
 
-void ok::MQTTClient::on_disconnect(int /*rc*/) { logger_->info("Disconnected"); }
+void ok::MQTTClient::on_disconnect(int rc) 
+{
+  connected_ = false; 
+  logger_->info("Disconnected {} {}", rc, strerror(rc));
+  reconnect();
+}
 
 void ok::MQTTClient::on_message(const struct mosquitto_message *message)
 {
