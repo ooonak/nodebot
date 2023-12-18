@@ -4,8 +4,8 @@
 #include <thread>
 #include <vector>
 
-#include "NodeBot/MessageQueueThreadsafe.hpp"
 #include "NodeBot/MQTTController.hpp"
+#include "NodeBot/MessageQueueThreadsafe.hpp"
 #include "NodeBot/NodeBot.hpp"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
@@ -42,8 +42,8 @@ int main()
     ok::MessageQueueThreadsafe ingressQueue;
     ok::MessageQueueThreadsafe egressQueue;
 
-    auto mqtt =
-        ok::MQTTController(spdlog::get("MQTT"), ok::MQTTConfig{"NodeBotClient", "localhost", 1883, "nodebot"}, &ingressQueue);
+    auto mqtt = ok::MQTTController(spdlog::get("MQTT"), ok::MQTTConfig{"NodeBotClient", "localhost", 1883, "nodebot"},
+                                   &ingressQueue);
 
     ok::Message msg{};
     while (1)
@@ -53,10 +53,11 @@ int main()
 
       egressQueue.push(msg);
       ok::Message tmpMsg{};
-      egressQueue.waitAndPop(&tmpMsg);
-      if (mqtt->sendMessage(tmpMsg))
+      egressQueue.waitAndPop(tmpMsg);
+      tmpMsg.jsonPayload.append(" this is a response...");
+      if (!mqtt.sendMessage(tmpMsg))
       {
-        spdlog::get("MQTT")->info("Published response msg.");
+        spdlog::get("MQTT")->error("Failed to publish response msg.");
       }
     }
 

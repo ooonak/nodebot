@@ -1,6 +1,9 @@
 #include "NodeBot/MQTTController.hpp"
+
 #include <mosquittopp.h>
+
 #include <stdexcept>
+
 #include "MQTTClient.hpp"
 
 ok::MQTTController::MQTTController(const std::shared_ptr<spdlog::logger>& logger, const MQTTConfig config,
@@ -41,7 +44,7 @@ ok::MQTTController::~MQTTController()
   logger_->info("Gracefull shutdown");
 }
 
-bool ok::MQTTController::sendMessage(const ok::Message &msg) const
+bool ok::MQTTController::sendMessage(const ok::Message& msg) const
 {
   if (client_ != nullptr)
   {

@@ -2,14 +2,15 @@
 
 #include <mosquittopp.h>
 
+#include <atomic>
 #include <cstdint>
 #include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
-#include <atomic>
-#include "MessageQueue.hpp"
+
 #include "MQTTConfig.hpp"
+#include "MessageQueue.hpp"
 #include "spdlog/spdlog.h"
 
 namespace ok
@@ -18,16 +19,16 @@ namespace ok
 class MQTTClient : public mosqpp::mosquittopp
 {
  public:
-  explicit MQTTClient(const std::shared_ptr<spdlog::logger>& logger, const ok::MQTTConfig config, MessageQueue* ingressQueue);
+  explicit MQTTClient(const std::shared_ptr<spdlog::logger>& logger, const ok::MQTTConfig config,
+                      MessageQueue* ingressQueue);
 
   ~MQTTClient();
 
-  bool sendMessage(const ok::Message &msg);
+  bool sendMessage(const ok::Message& msg);
 
   static bool containsNonAlpha(const std::string& str);
 
-  static std::optional<ok::Message> parse(const std::string& topic,
-                                                 const std::shared_ptr<spdlog::logger>& logger);
+  static std::optional<ok::Message> parse(const std::string& topic, const std::shared_ptr<spdlog::logger>& logger);
 
  protected:
   void on_connect(int rc) override;

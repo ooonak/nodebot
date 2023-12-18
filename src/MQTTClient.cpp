@@ -1,6 +1,7 @@
 #include "MQTTClient.hpp"
 
-ok::MQTTClient::MQTTClient(const std::shared_ptr<spdlog::logger> &logger, const MQTTConfig config, MessageQueue* ingressQueue)
+ok::MQTTClient::MQTTClient(const std::shared_ptr<spdlog::logger> &logger, const MQTTConfig config,
+                           MessageQueue *ingressQueue)
     : mosquittopp(config.id.c_str()), logger_{logger}, config_{std::move(config)}, ingressQueue_{ingressQueue}
 {
   if (logger_ == nullptr)
@@ -30,11 +31,11 @@ bool ok::MQTTClient::sendMessage(const ok::Message &msg)
     return false;
   }
 
-  const auto topic = topicBase_ + "/" + std::to_string(msg.id) + "/" + ok::toString(msg.action); 
+  const auto topic = "/" + config_.base + "/" + std::to_string(msg.id) + "/" + ok::toString(msg.action);
   const auto rc = publish(nullptr, topic.c_str(), msg.jsonPayload.length(), msg.jsonPayload.c_str());
   if (rc != MOSQ_ERR_SUCCESS)
   {
-    logger_->error("Failed to publish {} {}", rc, strerror(rc));
+    logger_->error("Failed to publish to {} {} {}", topic, rc, strerror(rc));
     return false;
   }
 
@@ -68,9 +69,9 @@ void ok::MQTTClient::on_connect(int rc)
   }
 }
 
-void ok::MQTTClient::on_disconnect(int rc) 
+void ok::MQTTClient::on_disconnect(int rc)
 {
-  connected_ = false; 
+  connected_ = false;
   logger_->info("Disconnected {} {}", rc, strerror(rc));
   reconnect();
 }
@@ -100,7 +101,7 @@ bool ok::MQTTClient::containsNonAlpha(const std::string &str)
 }
 
 std::optional<ok::Message> ok::MQTTClient::parse(const std::string &topic,
-                                                        const std::shared_ptr<spdlog::logger> &logger)
+                                                 const std::shared_ptr<spdlog::logger> &logger)
 {
   try
   {

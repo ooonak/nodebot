@@ -4,19 +4,13 @@
 
 ok::Message::ActionT ok::fromString(const std::string &str)
 {
-  if (str == "connect")
-    return Message::ActionT::Connect;
-  if (str == "disconnect")
-    return Message::ActionT::Disconnect;
-  if (str == "message")
-    return Message::ActionT::Message;
-  if (str == "registercommand")
-    return Message::ActionT::RegisterCommand;
-  if (str == "unregistercommand")
-    return Message::ActionT::UnregisterCommand;
-  if (str == "command")
-    return Message::ActionT::Command;
-  
+  if (str == "connect") return Message::ActionT::Connect;
+  if (str == "disconnect") return Message::ActionT::Disconnect;
+  if (str == "message") return Message::ActionT::Message;
+  if (str == "registercommand") return Message::ActionT::RegisterCommand;
+  if (str == "unregistercommand") return Message::ActionT::UnregisterCommand;
+  if (str == "command") return Message::ActionT::Command;
+
   return Message::ActionT::None;
 }
 
