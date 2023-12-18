@@ -53,8 +53,7 @@ add_library(${PROJECT_NAME}
     control/InternalDataTypes.hpp
     MQTTController.cpp
     MQTTClient.cpp
-    IngressMessage.cpp
-    IngressMessage.hpp
+    Message.cpp
     utils/ThreadsafeQueue.hpp
 )
 

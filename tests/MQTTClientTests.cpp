@@ -47,7 +47,7 @@ TEST(MQTTClient, parseOk)
   ASSERT_TRUE(msg.has_value());
   EXPECT_EQ((*msg).id, std::uint64_t{1});
   EXPECT_EQ((*msg).group, "group");
-  EXPECT_EQ((*msg).action, ok::ActionT::Connect);
+  EXPECT_EQ((*msg).action, ok::Message::ActionT::Connect);
 }
 
 TEST(MQTTClient, parseToLong)

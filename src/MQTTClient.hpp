@@ -8,7 +8,7 @@
 #include <tuple>
 #include <vector>
 
-#include "IngressQueue.hpp"
+#include "MessageQueue.hpp"
 #include "MQTTConfig.hpp"
 #include "spdlog/spdlog.h"
 
@@ -18,14 +18,13 @@ namespace ok
 class MQTTClient : public mosqpp::mosquittopp
 {
  public:
-  explicit MQTTClient(const std::shared_ptr<spdlog::logger>& logger, const ok::MQTTConfig config,
-                      IngressQueue* ingressQueue);
+  explicit MQTTClient(const std::shared_ptr<spdlog::logger>& logger, const ok::MQTTConfig config, MessageQueue* ingressQueue);
 
   ~MQTTClient();
 
   static bool containsNonAlpha(const std::string& str);
 
-  static std::optional<ok::IngressMessage> parse(const std::string& topic,
+  static std::optional<ok::Message> parse(const std::string& topic,
                                                  const std::shared_ptr<spdlog::logger>& logger);
 
  protected:
@@ -45,7 +44,7 @@ class MQTTClient : public mosqpp::mosquittopp
   std::shared_ptr<spdlog::logger> logger_{nullptr};
   const MQTTConfig config_{};
   std::string topicBase_;
-  IngressQueue* ingressQueue_{nullptr};
+  MessageQueue* ingressQueue_{nullptr};
 };
 
 }  // namespace ok

@@ -4,8 +4,7 @@
 #include <thread>
 #include <vector>
 
-#include "IngressQueue.hpp"
-#include "NodeBot/IngressQueueThreadsafe.hpp"
+#include "NodeBot/MessageQueueThreadsafe.hpp"
 #include "NodeBot/MQTTController.hpp"
 #include "NodeBot/NodeBot.hpp"
 #include "spdlog/sinks/stdout_color_sinks.h"
@@ -40,15 +39,16 @@ int main()
     std::vector<spdlog::sink_ptr> sinks;
     setupLogging(sinks);
 
-    ok::IngressQueueThreadsafe queue;
+    ok::MessageQueueThreadsafe ingressQueue;
+    ok::MessageQueueThreadsafe egressQueue;
 
     auto mqtt =
-        ok::MQTTController(spdlog::get("MQTT"), ok::MQTTConfig{"NodeBotClient", "localhost", 1883, "nodebot"}, &queue);
+        ok::MQTTController(spdlog::get("MQTT"), ok::MQTTConfig{"NodeBotClient", "localhost", 1883, "nodebot"}, &ingressQueue);
 
-    ok::IngressMessage msg{};
+    ok::Message msg{};
     while (1)
     {
-      queue.waitAndPop(msg);
+      ingressQueue.waitAndPop(msg);
       spdlog::get("MQTT")->info(toString(msg));
     }
 

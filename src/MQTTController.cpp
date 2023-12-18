@@ -7,7 +7,7 @@
 #include "MQTTClient.hpp"
 
 ok::MQTTController::MQTTController(const std::shared_ptr<spdlog::logger>& logger, const MQTTConfig config,
-                                   IngressQueue* ingressQueue)
+                                   MessageQueue* ingressQueue)
     : logger_{logger}
 {
   if (logger_ == nullptr)
@@ -15,13 +15,11 @@ ok::MQTTController::MQTTController(const std::shared_ptr<spdlog::logger>& logger
     throw std::runtime_error("No logger (nullptr)");
   }
 
-  /*
   int major = 0;
   int minor = 0;
   int revision = 0;
   const int version = mosquitto_lib_version(&major, &minor, &revision);
   logger_->info("Using mosquitto library v{}.{}.{} ({})", major, minor, revision, version);
-  */
 
   mosqpp::lib_init();
 

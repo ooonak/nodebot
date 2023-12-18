@@ -10,13 +10,13 @@ namespace ok
 {
 
 class MQTTClient;
-class IngressQueue;
+class MessageQueue;
 
 class MQTTController
 {
  public:
   explicit MQTTController(const std::shared_ptr<spdlog::logger>& logger, const ok::MQTTConfig config,
-                          IngressQueue* ingressQueue);
+                          MessageQueue* ingressQueue);
 
   ~MQTTController();
 

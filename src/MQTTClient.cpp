@@ -1,7 +1,6 @@
 #include "MQTTClient.hpp"
 
-ok::MQTTClient::MQTTClient(const std::shared_ptr<spdlog::logger> &logger, const MQTTConfig config,
-                           IngressQueue *ingressQueue)
+ok::MQTTClient::MQTTClient(const std::shared_ptr<spdlog::logger> &logger, const MQTTConfig config, MessageQueue* ingressQueue)
     : mosquittopp(config.id.c_str()), logger_{logger}, config_{std::move(config)}, ingressQueue_{ingressQueue}
 {
   if (logger_ == nullptr)
@@ -75,12 +74,12 @@ bool ok::MQTTClient::containsNonAlpha(const std::string &str)
   return str.find_last_not_of("abcdefghijklmnopqrstuvwxyz") != std::string::npos;
 }
 
-std::optional<ok::IngressMessage> ok::MQTTClient::parse(const std::string &topic,
+std::optional<ok::Message> ok::MQTTClient::parse(const std::string &topic,
                                                         const std::shared_ptr<spdlog::logger> &logger)
 {
   try
   {
-    ok::IngressMessage msg{};
+    ok::Message msg{};
 
     size_t count = 0;
     size_t last = 0;
@@ -103,7 +102,7 @@ std::optional<ok::IngressMessage> ok::MQTTClient::parse(const std::string &topic
 
     msg.action = ok::fromString(topic.substr(last));
 
-    if (msg.id > 0 && msg.action != ActionT::None && !msg.group.empty())
+    if (msg.id > 0 && msg.action != Message::ActionT::None && !msg.group.empty())
     {
       return msg;
     }
